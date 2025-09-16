@@ -141,6 +141,12 @@ class ButtonCard extends LitElement {
 
   private _initialSetupComplete = false;
 
+  private _cardClickable = false;
+
+  private _iconClickable = false;
+
+  private _hasIconActions = false;
+
   private get _doIHaveEverything(): boolean {
     return !!this._hass && !!this._config && this.isConnected;
   }
@@ -945,15 +951,20 @@ class ButtonCard extends LitElement {
     });
   }
 
-  private _isClickable(state: HassEntity | undefined, configState: StateConfig | undefined): boolean {
+  private _computeIsClickable(state: HassEntity | undefined, configState: StateConfig | undefined): void {
     const tap_action = this._getTemplateOrValue(state, this._config!.tap_action!.action);
     const hold_action = this._getTemplateOrValue(state, this._config!.hold_action!.action);
     const double_tap_action = this._getTemplateOrValue(state, this._config!.double_tap_action!.action);
+    const icon_tap_action = this._getTemplateOrValue(state, this._config!.icon_tap_action!.action);
+    const icon_hold_action = this._getTemplateOrValue(state, this._config!.icon_hold_action!.action);
+    const icon_double_tap_action = this._getTemplateOrValue(state, this._config!.icon_double_tap_action!.action);
     const hasChildCards =
       this._hasChildCards(this._config!.custom_fields) ||
       !!(configState && this._hasChildCards(configState.custom_fields));
 
-    return tap_action != 'none' || hold_action != 'none' || double_tap_action != 'none' || hasChildCards;
+    this._cardClickable = tap_action != 'none' || hold_action != 'none' || double_tap_action != 'none' || hasChildCards;
+    this._hasIconActions = icon_tap_action != 'none' || icon_hold_action != 'none' || icon_double_tap_action != 'none';
+    this._iconClickable = this._cardClickable || this._hasIconActions;
   }
 
   private _rotate(configState: StateConfig | undefined): boolean {
@@ -976,6 +987,7 @@ class ButtonCard extends LitElement {
 
   private _cardHtml(): TemplateResult {
     const configState = this._getMatchingConfigState(this._stateObj);
+    this._computeIsClickable(this._stateObj, configState);
     let color: string = 'var(--state-inactive-color)';
     if (!!configState?.color && !AUTO_COLORS.includes(configState.color)) {
       color = configState.color;
@@ -1001,7 +1013,7 @@ class ButtonCard extends LitElement {
     const tooltipStyleFromConfig = this._buildStyleGeneric(this._stateObj, configState, 'tooltip');
     const classList: ClassInfo = {
       'button-card-main': true,
-      disabled: !this._isClickable(this._stateObj, configState),
+      disabled: !this._cardClickable,
       section: !!this._config?.section_mode,
     };
     if (!!this._config?.section_mode) {
@@ -1211,6 +1223,9 @@ class ButtonCard extends LitElement {
       ...haIconStyle,
       ...entityPictureStyleFromConfig,
     };
+    const classList: ClassInfo = {
+      enabled: this._iconClickable,
+    };
     const liveStream = this._buildLiveStream(entityPictureStyle);
     const shouldShowIcon = this._config!.show_icon && (icon || state);
 
@@ -1224,6 +1239,7 @@ class ButtonCard extends LitElement {
           ${shouldShowIcon && !entityPicture && !liveStream
             ? html`
                 <ha-state-icon
+                  class=${classMap(classList)}
                   .state=${state}
                   .stateObj=${state}
                   .hass=${this._hass}
@@ -1233,6 +1249,19 @@ class ButtonCard extends LitElement {
                   .icon="${icon}"
                   id="icon"
                   ?rotating=${this._rotate(configState)}
+                  @action=${this._handleIconAction}
+                  @click=${this._hasIconActions && this._sendToParent}
+                  @touchstart=${this._hasIconActions && this._sendToParent}
+                  @mousedown=${this._hasIconActions && this._sendToParent}
+                  @mouseup=${this._hasIconActions && this._sendToParent}
+                  @touchend=${this._hasIconActions && this._sendToParent}
+                  @touchcancel=${this._hasIconActions && this._sendToParent}
+                  .actionHandler=${actionHandler({
+                    hasDoubleClick: this._config!.icon_double_tap_action!.action !== 'none',
+                    hasHold: this._config!.icon_hold_action!.action !== 'none',
+                    repeat: this._config!.icon_hold_action!.repeat,
+                    repeatLimit: this._config!.icon_hold_action!.repeat_limit,
+                  })}
                 ></ha-state-icon>
               `
             : ''}
@@ -1240,11 +1269,25 @@ class ButtonCard extends LitElement {
           ${entityPicture && !liveStream
             ? html`
                 <img
+                  class=${classMap(classList)}
                   src=${until(entityPicture)}
                   style=${styleMap(entityPictureStyle)}
                   id="icon"
                   ?rotating=${this._rotate(configState)}
                   draggable="false"
+                  @action=${this._handleIconAction}
+                  @click=${this._hasIconActions && this._sendToParent}
+                  @touchstart=${this._hasIconActions && this._sendToParent}
+                  @mousedown=${this._hasIconActions && this._sendToParent}
+                  @mouseup=${this._hasIconActions && this._sendToParent}
+                  @touchend=${this._hasIconActions && this._sendToParent}
+                  @touchcancel=${this._hasIconActions && this._sendToParent}
+                  .actionHandler=${actionHandler({
+                    hasDoubleClick: this._config!.icon_double_tap_action!.action !== 'none',
+                    hasHold: this._config!.icon_hold_action!.action !== 'none',
+                    repeat: this._config!.icon_hold_action!.repeat,
+                    repeatLimit: this._config!.icon_hold_action!.repeat_limit,
+                  })}
                 />
               `
             : ''}
@@ -1309,6 +1352,9 @@ class ButtonCard extends LitElement {
       group_expand: false,
       hold_action: { action: 'none' },
       double_tap_action: { action: 'none' },
+      icon_tap_action: { action: 'none' },
+      icon_hold_action: { action: 'none' },
+      icon_double_tap_action: { action: 'none' },
       layout: 'vertical',
       size: '40%',
       color_type: 'icon',
@@ -1439,38 +1485,59 @@ class ButtonCard extends LitElement {
     this._ripple.then((r) => r && typeof r.endFocus === 'function' && this._rippleHandlers.endFocus());
   }
 
-  private _handleAction(ev: any): void {
+  private _handleIconAction(ev: any): void {
+    if (this._hasIconActions && ev.stopPropagation) {
+      // stop event bubbling to avoid triggering card action
+      ev.stopPropagation();
+    }
     if (ev.detail?.action) {
-      switch (ev.detail.action) {
-        case 'tap':
-        case 'hold':
-        case 'double_tap':
-          const config = this._config;
-          if (!config) return;
-          const action = ev.detail.action;
-          const localAction = this._evalActions(config, `${action}_action`);
-          const soundUrl = localAction[`${action}_action`].sound;
-          if (soundUrl) {
-            if (isMediaSourceContentId(soundUrl)) {
-              resolveMediaSource(this._hass!, soundUrl)
-                .then((resolved) => {
-                  const sound = new Audio(resolved.url);
-                  sound.play();
-                })
-                .catch(() => {
-                  console.error(`button-card: Error loading media source: ${soundUrl}`);
-                });
-            } else {
-              const sound = new Audio(soundUrl);
-              sound.play();
-            }
-          }
-          handleAction(this, this._hass!, localAction, action);
-          break;
-        default:
-          break;
+      const config = this._config;
+      if (!config) return;
+      const action = ev.detail.action;
+      const actionKey = `icon_${action}_action`;
+      const localAction = this._evalActions(config, actionKey);
+      if (localAction[actionKey]?.action !== 'none') {
+        this._runAction(ev.detail.action, { isIcon: true });
       }
     }
+  }
+
+  private _handleAction(ev: any): void {
+    if (ev.detail?.action) {
+      this._runAction(ev.detail.action, { isIcon: false });
+    }
+  }
+
+  private _runAction(action: string, options: { isIcon: boolean }): void {
+    const config = this._config;
+    if (!config) return;
+    const actionKey = options.isIcon ? `icon_${action}_action` : `${action}_action`;
+    const localAction = this._evalActions(config, actionKey);
+    // Check if the action is configured (not 'none')
+    if (!localAction[actionKey] || localAction[actionKey].action === 'none') {
+      return;
+    }
+
+    const soundUrl = localAction[actionKey].sound;
+    if (soundUrl) {
+      if (isMediaSourceContentId(soundUrl)) {
+        resolveMediaSource(this._hass!, soundUrl)
+          .then((resolved) => {
+            const sound = new Audio(resolved.url);
+            sound.play();
+          })
+          .catch(() => {
+            console.error(`button-card: Error loading media source: ${soundUrl}`);
+          });
+      } else {
+        const sound = new Audio(soundUrl);
+        sound.play();
+      }
+    }
+    if (options.isIcon) {
+      localAction[`${action}_action`] = localAction[`icon_${action}_action`];
+    }
+    handleAction(this, this._hass!, localAction, action);
   }
 
   private _handleUnlockType(ev): void {
