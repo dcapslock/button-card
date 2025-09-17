@@ -87,6 +87,7 @@ import {
 } from './common/format_date';
 import { DEFAULT_LOCK_DURATION, DEFAULT_LOCK_ICON, DEFAULT_UNLOCK_ICON } from './const';
 import { parseDuration } from './common/parse-duration';
+import { handleHaptic, hapticIntercept, HapticFunctions } from './haptic';
 
 let helpers = (window as any).cardHelpers;
 const helperPromise = new Promise<void>(async (resolve) => {
@@ -1607,7 +1608,15 @@ class ButtonCard extends LitElement {
     if (options.isIcon) {
       localAction[`${action}_action`] = localAction[`icon_${action}_action`];
     }
+    const haptic = localAction[`${action}_action`].haptic;
+    let hapticFunction: HapticFunctions | undefined;
+    if (haptic) {
+      hapticFunction = hapticIntercept();
+    }
     handleAction(this, this._hass!, localAction, action);
+    if (haptic && hapticFunction) {
+      handleHaptic(hapticFunction, haptic);
+    }
   }
 
   private _handleUnlockType(ev): void {
