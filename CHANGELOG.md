@@ -1,3 +1,13 @@
+## [5.0.0-dev.2](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.1...v5.0.0-dev.2) (2025-09-17)
+
+### Features
+
+* allow html tooltips using the lit html tag ([5bb800a](https://github.com/custom-cards/button-card/commit/5bb800a61fb0449492505471bd7ceaac75cd1489))
+
+### Bug Fixes
+
+* console error on click introduced in 5.0.0-dev.1 ([fc39748](https://github.com/custom-cards/button-card/commit/fc39748e0b0062c605abc09f9e6d2effd9424ceb)), closes [#1001](https://github.com/custom-cards/button-card/issues/1001)
+
 ## [5.0.0-dev.1](https://github.com/custom-cards/button-card/compare/v4.3.0...v5.0.0-dev.1) (2025-09-16)
 
 ### ⚠ BREAKING CHANGES

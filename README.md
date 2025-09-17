@@ -420,6 +420,7 @@ Those are the configuration fields which support templating:
 - `name` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` `` object
 - `state_display` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` `` object
 - `label` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` `` object
+- `tooltip` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` ``
 - `entity_picture`: This needs to return a path to a file or a url as a string.
 - `icon`: This needs to return a string in the format `mdi:icon`
 - All the styles in the style object: This needs to return a string
