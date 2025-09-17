@@ -1276,19 +1276,21 @@ class ButtonCard extends LitElement {
                   .icon="${icon}"
                   id="icon"
                   ?rotating=${this._rotate(configState)}
-                  @action=${this._handleIconAction}
+                  @action=${this._hasIconActions ? this._handleIconAction : undefined}
                   @click=${this._hasIconActions ? this._sendToParent : undefined}
                   @touchstart=${this._hasIconActions ? this._sendToParent : undefined}
                   @mousedown=${this._hasIconActions ? this._sendToParent : undefined}
                   @mouseup=${this._hasIconActions ? this._sendToParent : undefined}
                   @touchend=${this._hasIconActions ? this._sendToParent : undefined}
                   @touchcancel=${this._hasIconActions ? this._sendToParent : undefined}
-                  .actionHandler=${actionHandler({
-                    hasDoubleClick: this._config!.icon_double_tap_action!.action !== 'none',
-                    hasHold: this._config!.icon_hold_action!.action !== 'none',
-                    repeat: this._config!.icon_hold_action!.repeat,
-                    repeatLimit: this._config!.icon_hold_action!.repeat_limit,
-                  })}
+                  .actionHandler=${this._hasIconActions
+                    ? actionHandler({
+                        hasDoubleClick: this._config!.icon_double_tap_action!.action !== 'none',
+                        hasHold: this._config!.icon_hold_action!.action !== 'none',
+                        repeat: this._config!.icon_hold_action!.repeat,
+                        repeatLimit: this._config!.icon_hold_action!.repeat_limit,
+                      })
+                    : undefined}
                 ></ha-state-icon>
               `
             : ''}
@@ -1302,19 +1304,21 @@ class ButtonCard extends LitElement {
                   id="icon"
                   ?rotating=${this._rotate(configState)}
                   draggable="false"
-                  @action=${this._handleIconAction}
+                  @action=${this._hasIconActions ? this._handleIconAction : undefined}
                   @click=${this._hasIconActions ? this._sendToParent : undefined}
                   @touchstart=${this._hasIconActions ? this._sendToParent : undefined}
                   @mousedown=${this._hasIconActions ? this._sendToParent : undefined}
                   @mouseup=${this._hasIconActions ? this._sendToParent : undefined}
                   @touchend=${this._hasIconActions ? this._sendToParent : undefined}
                   @touchcancel=${this._hasIconActions ? this._sendToParent : undefined}
-                  .actionHandler=${actionHandler({
-                    hasDoubleClick: this._config!.icon_double_tap_action!.action !== 'none',
-                    hasHold: this._config!.icon_hold_action!.action !== 'none',
-                    repeat: this._config!.icon_hold_action!.repeat,
-                    repeatLimit: this._config!.icon_hold_action!.repeat_limit,
-                  })}
+                  .actionHandler=${this._hasIconActions
+                    ? actionHandler({
+                        hasDoubleClick: this._config!.icon_double_tap_action!.action !== 'none',
+                        hasHold: this._config!.icon_hold_action!.action !== 'none',
+                        repeat: this._config!.icon_hold_action!.repeat,
+                        repeatLimit: this._config!.icon_hold_action!.repeat_limit,
+                      })
+                    : undefined}
                 />
               `
             : ''}
