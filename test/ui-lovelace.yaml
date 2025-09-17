@@ -1962,6 +1962,55 @@ views:
               rows: 2
               columns: 4
 
+      - type: grid
+        cards:
+          - type: 'custom:button-card'
+            color_type: label-card
+            styles:
+              card:
+                - font-weight: bold
+                - text-transform: uppercase
+            name: Haptic
+            section_mode: true
+            grid_options:
+              rows: 1
+              columns: 12
+          - type: 'custom:button-card'
+            entity: switch.skylight
+            show_label: true
+            label: None
+            tap_action:
+              action: toggle
+              haptic: none
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+          - type: 'custom:button-card'
+            entity: switch.skylight
+            show_label: true
+            label: Heavy
+            color: darkorange
+            tap_action:
+              action: toggle
+              haptic: heavy
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+          - type: 'custom:button-card'
+            entity: switch.skylight
+            show_label: true
+            label: Failure
+            color: red
+            tap_action:
+              action: toggle
+              haptic: failure
+              section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+
   - title: Nested Templates
     cards:
       - type: custom:button-card
