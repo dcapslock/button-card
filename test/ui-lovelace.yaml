@@ -346,14 +346,11 @@ views:
         color_type: card
         icon: mdi:lock
         name: Lock + Tooltip Test
-        tooltip: 'Test Test'
+        tooltip: '[[[ return html`Line Extra Info<br>Next Line<ha-icon icon="mdi:help" style="color: red; width: 1em;"></ha-icon><br>` ]]]'
         lock:
           enabled: true
           duration: 7
           unlock: hold
-        styles:
-          tooltip:
-            - color: red
       - type: 'custom:button-card'
         custom_fields:
           test:

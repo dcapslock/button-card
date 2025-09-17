@@ -1012,6 +1012,9 @@ class ButtonCard extends LitElement {
     const configState = this._getMatchingConfigState(this._stateObj);
     this._computeIsClickable(this._stateObj, configState);
     let color: string = 'var(--state-inactive-color)';
+    const tooltipValue: string | undefined = this._config!.tooltip
+      ? this._getTemplateOrValue(this._stateObj, this._config!.tooltip)
+      : undefined;
     if (!!configState?.color && !AUTO_COLORS.includes(configState.color)) {
       color = configState.color;
     } else if (!!this._config?.color && !AUTO_COLORS.includes(this._config.color)) {
@@ -1117,7 +1120,7 @@ class ButtonCard extends LitElement {
       ${this._config?.tooltip
         ? html`
             <span class="tooltiptext" style=${styleMap(tooltipStyleFromConfig)}>
-              ${this._getTemplateOrValue(this._stateObj, this._config.tooltip)}
+              ${this._unsafeHTMLorNot(tooltipValue)}
             </span>
           `
         : ''}
