@@ -1,3 +1,9 @@
+## [5.0.0-dev.3](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.2...v5.0.0-dev.3) (2025-09-17)
+
+### Bug Fixes
+
+* double triggers with icon_*_actions ([d9725d7](https://github.com/custom-cards/button-card/commit/d9725d75081225bdd660feeb9c8de1f928ac7682))
+
 ## [5.0.0-dev.2](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.1...v5.0.0-dev.2) (2025-09-17)
 
 ### Features
