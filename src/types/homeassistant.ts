@@ -281,3 +281,45 @@ export interface ResolvedMediaSource {
   url: string;
   mime_type: string;
 }
+
+export interface EMMessage {
+  id?: number;
+  type: string;
+}
+
+export interface EMOutgoingMessageHaptic extends EMMessage {
+  type: 'haptic';
+  payload: { hapticType: string };
+}
+
+export interface BasePayload {
+  callback: string;
+}
+
+export interface GetExternalAuthPayload extends BasePayload {
+  force?: boolean;
+}
+declare global {
+  interface Window {
+    externalApp?: {
+      getExternalAuth(payload: string);
+      revokeExternalAuth(payload: string);
+      externalBus(payload: string);
+    };
+    webkit?: {
+      messageHandlers: {
+        getExternalAuth: {
+          postMessage(payload: GetExternalAuthPayload);
+        };
+        revokeExternalAuth: {
+          postMessage(payload: BasePayload);
+        };
+        externalBus: {
+          postMessage(payload: EMMessage);
+        };
+      };
+    };
+  }
+}
+
+export const isExternal = window.externalApp || window.webkit?.messageHandlers?.getExternalAuth;

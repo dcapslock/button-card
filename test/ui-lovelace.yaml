@@ -1958,7 +1958,7 @@ views:
             grid_options:
               rows: 2
               columns: 4
-              
+
       - type: grid
         cards:
           - type: 'custom:button-card'
@@ -2003,7 +2003,45 @@ views:
             tap_action:
               action: toggle
               haptic: failure
-              section_mode: true
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+          - type: 'custom:button-card'
+            entity: switch.skylight
+            show_label: true
+            label: None - Hold
+            hold_action:
+              action: toggle
+              haptic: none
+              repeat: 1000
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+          - type: 'custom:button-card'
+            entity: switch.skylight
+            show_label: true
+            label: Heavy - Hold
+            color: darkorange
+            hold_action:
+              action: toggle
+              haptic: heavy
+              repeat: 1000
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+          - type: 'custom:button-card'
+            entity: switch.skylight
+            show_label: true
+            label: Failure - Hold
+            color: red
+            hold_action:
+              action: toggle
+              haptic: failure
+              repeat: 1000
+            section_mode: true
             grid_options:
               rows: 2
               columns: 4
