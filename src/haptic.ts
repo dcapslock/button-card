@@ -1,6 +1,8 @@
 import { fireEvent } from './common/fire-event';
 import { EMMessage, EMOutgoingMessageHaptic, isExternal } from './types/homeassistant';
 
+// https://github.com/home-assistant/frontend/blob/master/src/data/haptics.ts
+
 // Allowed types are from iOS HIG.
 // https://developer.apple.com/design/human-interface-guidelines/ios/user-interaction/feedback/#haptics
 // Implementors on platforms other than iOS should attempt to match the patterns (shown in HIG) as closely as possible.

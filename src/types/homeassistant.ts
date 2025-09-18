@@ -282,6 +282,8 @@ export interface ResolvedMediaSource {
   mime_type: string;
 }
 
+// https://github.com/home-assistant/frontend/blob/master/src/external_app/external_messaging.ts
+
 export interface EMMessage {
   id?: number;
   type: string;
