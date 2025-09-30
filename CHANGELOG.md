@@ -1,3 +1,15 @@
+## [5.0.0-dev.4](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.3...v5.0.0-dev.4) (2025-09-30)
+
+### ⚠ BREAKING CHANGES
+
+* **actions:** CSS variables `--mdc-ripple-*` are no longer supported.
+These have been replaced with `--button-card-ripple-*` variables. You
+will need to update your configuration.
+
+### Features
+
+* **actions:** migrate to ha-ripple ([#1011](https://github.com/custom-cards/button-card/issues/1011)) ([3c4dc92](https://github.com/custom-cards/button-card/commit/3c4dc9293f1fc58be3b7f83e8973895ea419abf3)), closes [#887](https://github.com/custom-cards/button-card/issues/887)
+
 ## [5.0.0-dev.3](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.2...v5.0.0-dev.3) (2025-09-17)
 
 ### Bug Fixes
