@@ -53,8 +53,9 @@ Lovelace Button card for your entities.
   - [Configuration with states](#configuration-with-states)
     - [Default behavior](#default-behavior)
     - [With Operator on state](#with-operator-on-state)
-    - [`tap_action` Navigate](#tap_action-navigate)
     - [blink](#blink)
+  - [`tap_action` Navigate](#tap_action-navigate)
+  - [`icon_*_action`](#icon__action)
   - [Play with width, height and icon size](#play-with-width-height-and-icon-size)
   - [Templates Support](#templates-support)
     - [Playing with label templates](#playing-with-label-templates)
@@ -71,6 +72,7 @@ Lovelace Button card for your entities.
 
 - works with any toggleable entity
 - 6 available actions on **tap** and/or **hold** and/or **double click**: `none`, `toggle`, `more-info`, `navigate`, `url`, `assist` and `call-service`
+- **icon tap action**: Separate action when clicking the icon specifically which takes precedence over main card actions.
 - state display (optional)
 - custom color (optional), or based on light rgb value/temperature
 - custom state definition with customizable color, icon and style (optional)
@@ -103,15 +105,19 @@ Lovelace Button card for your entities.
 | `entity` | string | optional | `switch.ac` | entity_id |
 | `section_mode` | boolean | optional | `true` \| `false` | Set it to `true` when the card is used in a sections view. See [Sections views](#sections-views) |
 | `triggers_update` | string or array | optional | `switch.ac` | entity_id list that would trigger a card update, see [triggers_update](#triggers_update) |
+| `update_timer` | number or string | optional | number >= 100 (ms), string duration in english supported by `helpers.parseDuration` >= 100 (ms) | Set to a duration greater than or equal to 100ms to update the card at this refresh rate. This should only be used when the card has no entity and there is no appropriate [triggers_update](#triggers_update) strategy. Supports templates, see [templates](#javascript-templates). The template is evaluated on each refresh of the card, be it from the `update_timer` timeout or trigger update. To maintan dashboard compatability when user locale changes, the duration must be specified in english locale. |
 | `group_expand` | boolean | false | `true` \| `false` | When `true`, if any of the entities triggering a card update is a group, it will auto-expand the group and the card will update on any child entity state change. This works with nested groups too. See [triggers_update](#triggers_update) |
 | `icon` | string | optional | `mdi:air-conditioner` | Icon to display. Will be overridden by the icon defined in a state (if present). Defaults to the entity icon. Hide with `show_icon: false`. Supports templates, see [templates](#javascript-templates) |
 | `color_type` | string | `icon` | `icon` \| `card` \| `blank-card` \| `label-card` | Color either the background of the card or the icon inside the card. Setting this to `card` enable automatic `font` and `icon` color. This allows the text/icon to be readable even if the background color is bright/dark. Additional color-type options `blank-card` and `label-card` can be used for organisation (see examples). |
-| `color` | string | optional | `auto` \| `auto-no-temperature` \| `rgb(28, 128, 199)` | Color of the icon/card. `auto` sets the color based on the color of a light including the temperature of the light. Setting this to `auto-no-temperature` will behave like home-assistant's default, ignoring the temperature of the light. By default, if the entity state is `off`, the color will be `var(--paper-item-icon-color)`, for `on` it will be `var(--paper-item-icon-active-color)` and for any other state it will be `var(--primary-text-color)`. You can redefine each colors using `state` |
+| `color` | string | optional | `auto` \| `auto-no-temperature` \| `rgb(28, 128, 199)` | Color of the icon/card. `auto` sets the color based on the color of a light including the temperature of the light. Setting this to `auto-no-temperature` will behave like home-assistant's default, ignoring the temperature of the light. By default, if the entity state is `off`, the color will be `var(--state-inactive-color)` for icon and `var (--card-background-color)` for card, for `on` it will be `var(--state-active-color)` and for any other state it will be `var(--primary-text-color)`. You can redefine each colors using `state` |
 | `size` | string | `40%` | `20px` | Size of the icon. Can be percentage or pixel |
 | `aspect_ratio` | string | optional | `1/1`, `2/1`, `1/1.5`, ... | See [here](#aspect-ratio) for an example. Aspect ratio of the card. `1/1` being a square. This will auto adapt to your screen size |
 | `tap_action` | object | optional | See [Action](#Action) | Define the type of action on click, if undefined, toggle will be used for domains that support toggle, or button press for input_button. |
 | `hold_action` | object | optional | See [Action](#Action) | Define the type of action on hold, if undefined, nothing happens. |
 | `double_tap_action` | object | optional | See [Action](#Action) | Define the type of action on double click, if undefined, nothing happens. |
+| `icon_tap_action` | object | optional | See [Action](#Action) | Define the type of action on icon click, if undefined, nothing happens. When configured, the icon becomes clickable separately from the card. See note in [icon\_\*\_action](#icon__action) |
+| `icon_hold_action` | object | optional | See [Action](#Action) | Define the type of action on icon hold, if undefined, nothing happens. When configured, the icon becomes holdable separately from the card. See note in [icon\_\*\_action](#icon__action) |
+| `icon_double_tap_action` | object | optional | See [Action](#Action) | Define the type of action on icon double click, if undefined, nothing happens. When configured, the icon becomes double-clickable separately from the card. See note in [icon\_\*\_action](#icon__action) |
 | `name` | string | optional | `Air conditioner` | Define an optional text to show below the icon. Supports templates, see [templates](#javascript-templates) |
 | `state_display` | string | optional | `On` | Override the way the state is displayed. Supports templates, see [templates](#javascript-templates) |
 | `label` | string | optional | Any string that you want | Display a label below the card. See [Layouts](#layout) for more information. Supports templates, see [templates](#javascript-templates) |
@@ -289,7 +295,9 @@ To enable compatibility with sections (meaning the card adjusts its size automat
 
 For users with heavily modified cards using `styles`, you might need to adjust your configuration once enabling `section_mode`.
 
-⚠️ While `section_mode` is enabled: using `aspect_ratio` or setting the card's `height` or `width` using CSS will probably the layout and is considered incompatible. There might be other incompatible options, if you find any, please update this documentation by submitting a PR.
+> [!IMPORTANT]
+>
+> While `section_mode` is enabled: using `aspect_ratio` or setting the card's `height` or `width` using CSS will probably break the layout and is considered incompatible. There might be other incompatible options, if you find any, please update this documentation by submitting a PR.
 
 ![section_mode_true](examples/section_mode.png)
 
@@ -353,6 +361,8 @@ Multiple values are possible, see the image below for examples:
 
 This field defines which entities should trigger an update of the card itself (this rule doesn't apply for nested cards in custom_fields as they are always updated with the latest state. This is expected and fast!). This was introduced in 3.3.0 to reduce the load on the frontend.
 
+If you are using `update_timer` you can set `triggers_update: update_timer` which will **ONLY** update at the timer interval. If `update_timer` is a template, the template is checked whenever hass entities update.
+
 If you don't have javascript `[[[ ]]]` templates in your config, you don't need to do anything, else read further.
 
 By default, the card will update itself when the main entity in the configuration is updated. In any case, the card will parse your code and look for entities that it can match (**it only matches `states['ENTITY_ID']`**) so:
@@ -384,6 +394,8 @@ In this second case, you have 2 options:
 
 If your entity, any entity in the `triggers_update` field or any entity matched from your templates are a group and you want to update the card if any of the nested entity in that group update its state, then you can set `group_expand` to `true`. It will do the work for you and you won't have to specify manually the full list of entities in `triggers_update`.
 
+If no entity is suitable for `triggers_update` you may consider to use `update_timer`.
+
 ### Javascript Templates
 
 The template rendering uses a special format. All the fields where template is supported also support plain text. To activate the templating feature for such a field, you'll need to enclose the javascript function inside 3 square brackets: `[[[ javascript function here ]]]`
@@ -408,6 +420,7 @@ Those are the configuration fields which support templating:
 - `name` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` `` object
 - `state_display` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` `` object
 - `label` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` `` object
+- `tooltip` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` ``
 - `entity_picture`: This needs to return a path to a file or a url as a string.
 - `icon`: This needs to return a string in the format `mdi:icon`
 - All the styles in the style object: This needs to return a string
@@ -486,6 +499,7 @@ Inside the javascript code, you'll have access to those variables:
     - `helpers.formatShortDateTimeWithYear(datetime)`: 9/8/2021, 8:23 AM
     - Example: `return helpers.formatDateTime(entity.attribute.last_changed)`
   - `helpers.relativeTime(date, capitalize? = false)`: Returns an lit-html template which will render a relative time and update automatically. `date` should be a string. `capitalize` is an optional boolean, if set to `true`, the first letter will be uppercase. Usage for eg.: `return helpers.relativeTime(entity.last_changed)`
+  - `helpers.parseDuration(duration,format?='ms',locale? = <Home Assistant locale>)`: Parses a string duration to number. `helpers.parseDuration('1 day', 's')` returns `86400`. `helpers.parseDuration('1 jour', 'd', 'fr')` returns `1`. If a locale is specified `en` is also used as a fallback.
 
 See [here](#templates-support) for some examples or [here](#custom-fields) for some crazy advanced stuff using templates!
 
@@ -1371,22 +1385,6 @@ The definition order matters, the first item to match will be the one selected.
           - opacity: 0.5
 ```
 
-#### `tap_action` Navigate
-
-Buttons can link to different views using the `navigate` action:
-
-```yaml
-- type: 'custom:button-card'
-  color_type: label-card
-  icon: mdi:home
-  name: Go To Home
-  tap_action:
-    action: navigate
-    navigation_path: /lovelace/0
-```
-
-The `navigation_path` also accepts any Home Assistant internal URL such as /dev-info or /hassio/dashboard for example.
-
 #### blink
 
 You can make the whole button blink:
@@ -1408,6 +1406,64 @@ You can make the whole button blink:
     - operator: default
       color: green
       icon: mdi:shield-check
+```
+
+### `tap_action` Navigate
+
+Buttons can link to different views using the `navigate` action:
+
+```yaml
+- type: 'custom:button-card'
+  color_type: label-card
+  icon: mdi:home
+  name: Go To Home
+  tap_action:
+    action: navigate
+    navigation_path: /lovelace/0
+```
+
+The `navigation_path` also accepts any Home Assistant internal URL such as /dev-info or /hassio/dashboard for example.
+
+### `icon_*_action`
+
+You can configure a separate action for when clicking the icon specifically, while the card itself has a different action:
+
+```yaml
+- type: 'custom:button-card'
+  entity: light.living_room
+  name: Living Room Light
+  tap_action:
+    action: toggle
+  icon_tap_action:
+    action: more-info
+```
+
+> [!IMPORTANT]
+>
+> If any `icon_*_action` is defined, the icon will capture **all** the actions for its area. For eg. in the case below, clicking on the icon will not do anything unless you hold it. To execute `tap_action` you'll have to click outside of the icon area.
+
+```yaml
+type: 'custom:button-card'
+entity: light.living_room
+name: Living Room Light
+tap_action:
+  action: toggle
+icon_hold_action:
+  action: more-info
+```
+
+In this case, if you want to have the same action as the button also on the icon for `tap`, you'll have to define the `icon_tap_action` explicitely.
+
+```yaml
+type: 'custom:button-card'
+entity: light.living_room
+name: Living Room Light
+tap_action:
+  action: toggle
+icon_tap_action:
+  action: toggle
+icon_hold_action:
+  action: more-info
 ```
 
 ### Play with width, height and icon size

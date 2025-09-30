@@ -87,6 +87,7 @@ import {
 } from './common/format_date';
 import { DEFAULT_LOCK_DURATION, DEFAULT_LOCK_ICON, DEFAULT_UNLOCK_ICON } from './const';
 import { forwardHaptic } from './forward-haptic';
+import { parseDuration } from './common/parse-duration';
 
 let helpers = (window as any).cardHelpers;
 const helperPromise = new Promise<void>(async (resolve) => {
@@ -122,6 +123,8 @@ class ButtonCard extends LitElement {
 
   @property() private _timeRemaining?: number;
 
+  @property() private _updateTimerMS?: number;
+
   @property({ type: Boolean, reflect: true }) preview = false;
 
   @queryAsync('mwc-ripple') private _ripple!: Promise<Ripple | null>;
@@ -134,6 +137,10 @@ class ButtonCard extends LitElement {
 
   private _interval?: number;
 
+  private _updateTimeout: number | undefined;
+
+  private _updateTimerDuration: number | undefined;
+
   private _cards: ButtonCardEmbeddedCards = {};
 
   private _cardsConfig: ButtonCardEmbeddedCardsConfig = {};
@@ -141,6 +148,12 @@ class ButtonCard extends LitElement {
   private _entities: string[] = [];
 
   private _initialSetupComplete = false;
+
+  private _cardClickable = false;
+
+  private _iconClickable = false;
+
+  private _hasIconActions = false;
 
   private get _doIHaveEverything(): boolean {
     return !!this._hass && !!this._config && this.isConnected;
@@ -179,6 +192,7 @@ class ButtonCard extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._clearInterval();
+    this._updateTimerCancel();
   }
 
   public connectedCallback(): void {
@@ -186,6 +200,7 @@ class ButtonCard extends LitElement {
     if (!this._initialSetupComplete) {
       this._finishSetup();
     } else {
+      this._updateTimerStart();
       this._startTimerCountdown();
     }
   }
@@ -276,6 +291,7 @@ class ButtonCard extends LitElement {
       this._triggersAll = this._config!.triggers_update === 'all' && jsonConfig.match(rxp) ? true : false;
 
       this._startTimerCountdown();
+      this._updateTimerStart();
       this._initialSetupComplete = true;
     }
   }
@@ -332,7 +348,15 @@ class ButtonCard extends LitElement {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    const forceUpdate = this._triggersAll || changedProps.has('_timeRemaining') ? true : false;
+    if (this._config?.triggers_update === 'update_timer') {
+      if (changedProps.has('_updateTimerMS')) {
+        return true;
+      } else {
+        return this._updateTimerChanged();
+      }
+    }
+    const forceUpdate =
+      this._triggersAll || changedProps.has('_timeRemaining') || changedProps.has('_updateTimerMS') ? true : false;
     if (forceUpdate || myHasConfigOrEntityChanged(this, changedProps)) {
       this._expandTriggerGroups();
       return true;
@@ -370,6 +394,8 @@ class ButtonCard extends LitElement {
         this._clearInterval();
       }
     }
+
+    this._updateTimer();
   }
 
   private _clearInterval(): void {
@@ -549,6 +575,9 @@ class ButtonCard extends LitElement {
       },
       formatDateWeekdayShort: (date) => {
         return formatDateWeekdayShort(new Date(date), this._hass!.locale, this._hass!.config);
+      },
+      parseDuration: (duration, format = 'ms', locale = this._hass!.locale?.language) => {
+        return parseDuration(duration, format, locale);
       },
     };
   }
@@ -919,12 +948,12 @@ class ButtonCard extends LitElement {
           <div
             id=${key}
             @action=${this._stopPropagation}
-            @click=${this._stopPropagation}
-            @touchstart=${this._stopPropagation}
-            @mousedown=${this._stopPropagation}
-            @mouseup=${this._stopPropagation}
-            @touchend=${this._stopPropagation}
-            @touchcancel=${this._stopPropagation}
+            @click=${this._sendToParent}
+            @touchstart=${this._sendToParent}
+            @mousedown=${this._sendToParent}
+            @mouseup=${this._sendToParent}
+            @touchend=${this._sendToParent}
+            @touchcancel=${this._sendToParent}
             style=${styleMap(customStyle)}
           >
             ${thing}
@@ -946,15 +975,20 @@ class ButtonCard extends LitElement {
     });
   }
 
-  private _isClickable(state: HassEntity | undefined, configState: StateConfig | undefined): boolean {
+  private _computeIsClickable(state: HassEntity | undefined, configState: StateConfig | undefined): void {
     const tap_action = this._getTemplateOrValue(state, this._config!.tap_action!.action);
     const hold_action = this._getTemplateOrValue(state, this._config!.hold_action!.action);
     const double_tap_action = this._getTemplateOrValue(state, this._config!.double_tap_action!.action);
+    const icon_tap_action = this._getTemplateOrValue(state, this._config!.icon_tap_action!.action);
+    const icon_hold_action = this._getTemplateOrValue(state, this._config!.icon_hold_action!.action);
+    const icon_double_tap_action = this._getTemplateOrValue(state, this._config!.icon_double_tap_action!.action);
     const hasChildCards =
       this._hasChildCards(this._config!.custom_fields) ||
       !!(configState && this._hasChildCards(configState.custom_fields));
 
-    return tap_action != 'none' || hold_action != 'none' || double_tap_action != 'none' || hasChildCards;
+    this._cardClickable = tap_action != 'none' || hold_action != 'none' || double_tap_action != 'none' || hasChildCards;
+    this._hasIconActions = icon_tap_action != 'none' || icon_hold_action != 'none' || icon_double_tap_action != 'none';
+    this._iconClickable = this._cardClickable || this._hasIconActions;
   }
 
   private _rotate(configState: StateConfig | undefined): boolean {
@@ -977,13 +1011,19 @@ class ButtonCard extends LitElement {
 
   private _cardHtml(): TemplateResult {
     const configState = this._getMatchingConfigState(this._stateObj);
+    this._computeIsClickable(this._stateObj, configState);
     let color: string = 'var(--state-inactive-color)';
+    const tooltipValue: string | undefined = this._config!.tooltip
+      ? this._getTemplateOrValue(this._stateObj, this._config!.tooltip)
+      : undefined;
     if (!!configState?.color && !AUTO_COLORS.includes(configState.color)) {
       color = configState.color;
     } else if (!!this._config?.color && !AUTO_COLORS.includes(this._config.color)) {
       if (this._stateObj) {
         if (stateActive(this._stateObj)) {
           color = this._config?.color || color;
+        } else {
+          color = stateColorCss(this._stateObj, this._stateObj.state, this._config?.color_type) || DEFAULT_COLOR;
         }
       } else {
         color = this._config.color;
@@ -1000,7 +1040,7 @@ class ButtonCard extends LitElement {
     const tooltipStyleFromConfig = this._buildStyleGeneric(this._stateObj, configState, 'tooltip');
     const classList: ClassInfo = {
       'button-card-main': true,
-      disabled: !this._isClickable(this._stateObj, configState),
+      disabled: !this._cardClickable,
       section: !!this._config?.section_mode,
     };
     if (!!this._config?.section_mode) {
@@ -1081,7 +1121,7 @@ class ButtonCard extends LitElement {
       ${this._config?.tooltip
         ? html`
             <span class="tooltiptext" style=${styleMap(tooltipStyleFromConfig)}>
-              ${this._getTemplateOrValue(this._stateObj, this._config.tooltip)}
+              ${this._unsafeHTMLorNot(tooltipValue)}
             </span>
           `
         : ''}
@@ -1210,6 +1250,9 @@ class ButtonCard extends LitElement {
       ...haIconStyle,
       ...entityPictureStyleFromConfig,
     };
+    const classList: ClassInfo = {
+      enabled: this._iconClickable,
+    };
     const liveStream = this._buildLiveStream(entityPictureStyle);
     const shouldShowIcon = this._config!.show_icon && (icon || state);
 
@@ -1223,6 +1266,7 @@ class ButtonCard extends LitElement {
           ${shouldShowIcon && !entityPicture && !liveStream
             ? html`
                 <ha-state-icon
+                  class=${classMap(classList)}
                   .state=${state}
                   .stateObj=${state}
                   .hass=${this._hass}
@@ -1232,6 +1276,21 @@ class ButtonCard extends LitElement {
                   .icon="${icon}"
                   id="icon"
                   ?rotating=${this._rotate(configState)}
+                  @action=${this._hasIconActions ? this._handleIconAction : undefined}
+                  @click=${this._hasIconActions ? this._sendToParent : undefined}
+                  @touchstart=${this._hasIconActions ? this._sendToParent : undefined}
+                  @mousedown=${this._hasIconActions ? this._sendToParent : undefined}
+                  @mouseup=${this._hasIconActions ? this._sendToParent : undefined}
+                  @touchend=${this._hasIconActions ? this._sendToParent : undefined}
+                  @touchcancel=${this._hasIconActions ? this._sendToParent : undefined}
+                  .actionHandler=${this._hasIconActions
+                    ? actionHandler({
+                        hasDoubleClick: this._config!.icon_double_tap_action!.action !== 'none',
+                        hasHold: this._config!.icon_hold_action!.action !== 'none',
+                        repeat: this._config!.icon_hold_action!.repeat,
+                        repeatLimit: this._config!.icon_hold_action!.repeat_limit,
+                      })
+                    : undefined}
                 ></ha-state-icon>
               `
             : ''}
@@ -1239,10 +1298,27 @@ class ButtonCard extends LitElement {
           ${entityPicture && !liveStream
             ? html`
                 <img
+                  class=${classMap(classList)}
                   src=${until(entityPicture)}
                   style=${styleMap(entityPictureStyle)}
                   id="icon"
                   ?rotating=${this._rotate(configState)}
+                  draggable="false"
+                  @action=${this._hasIconActions ? this._handleIconAction : undefined}
+                  @click=${this._hasIconActions ? this._sendToParent : undefined}
+                  @touchstart=${this._hasIconActions ? this._sendToParent : undefined}
+                  @mousedown=${this._hasIconActions ? this._sendToParent : undefined}
+                  @mouseup=${this._hasIconActions ? this._sendToParent : undefined}
+                  @touchend=${this._hasIconActions ? this._sendToParent : undefined}
+                  @touchcancel=${this._hasIconActions ? this._sendToParent : undefined}
+                  .actionHandler=${this._hasIconActions
+                    ? actionHandler({
+                        hasDoubleClick: this._config!.icon_double_tap_action!.action !== 'none',
+                        hasHold: this._config!.icon_hold_action!.action !== 'none',
+                        repeat: this._config!.icon_hold_action!.repeat,
+                        repeatLimit: this._config!.icon_hold_action!.repeat_limit,
+                      })
+                    : undefined}
                 />
               `
             : ''}
@@ -1307,6 +1383,9 @@ class ButtonCard extends LitElement {
       group_expand: false,
       hold_action: { action: 'none' },
       double_tap_action: { action: 'none' },
+      icon_tap_action: { action: 'none' },
+      icon_hold_action: { action: 'none' },
+      icon_double_tap_action: { action: 'none' },
       layout: 'vertical',
       size: '40%',
       color_type: 'icon',
@@ -1358,6 +1437,50 @@ class ButtonCard extends LitElement {
         }
       });
     }
+  }
+
+  private _updateTimerStart(): void {
+    this._updateTimerMS = Date.now();
+    this._updateTimer();
+  }
+
+  private _updateTimerCancel(): void {
+    if (this._updateTimeout) {
+      window.clearTimeout(this._updateTimeout);
+    }
+  }
+
+  private _updateTimerChanged(): boolean {
+    if (this._config?.update_timer) {
+      const updateInterval = this._getTemplateOrValue(this._stateObj, this._config.update_timer);
+      const updateIntervalMS = parseDuration(updateInterval, 'ms', 'en');
+      if (updateIntervalMS && updateIntervalMS >= 100 && updateIntervalMS !== this._updateTimerDuration) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private _updateTimer(): void {
+    if (this._updateTimeout) {
+      window.clearTimeout(this._updateTimeout);
+      this._updateTimeout = undefined;
+    }
+    if (this._config?.update_timer) {
+      const updateInterval = this._getTemplateOrValue(this._stateObj, this._config.update_timer);
+      const updateIntervalMS = parseDuration(updateInterval, 'ms', 'en');
+      if (updateIntervalMS && updateIntervalMS >= 100) {
+        this._updateTimerDuration = updateIntervalMS;
+        this._updateTimeout = window.setTimeout(() => {
+          this._updateRefresh();
+        }, updateIntervalMS);
+      }
+    }
+  }
+
+  private _updateRefresh(): void {
+    this._updateTimerMS = Date.now();
+    this._updateTimeout = undefined;
   }
 
   // The height of your card. Home Assistant uses this to automatically
@@ -1450,44 +1573,60 @@ class ButtonCard extends LitElement {
       ev.stopPropagation();
     }
   }
+  
+  private _handleIconAction(ev: any): void {
+    if (this._hasIconActions && ev.stopPropagation) {
+      // stop event bubbling to avoid triggering card action
+      ev.stopPropagation();
+    }
+    if (ev.detail?.action) {
+      const config = this._config;
+      if (!config) return;
+      const action = ev.detail.action;
+      const actionKey = `icon_${action}_action`;
+      const localAction = this._evalActions(config, actionKey);
+      if (localAction[actionKey]?.action !== 'none') {
+        this._runAction(ev.detail.action, { isIcon: true });
+      }
+    }
+  }
 
   private _handleAction(ev: any): void {
     if (ev.detail?.action) {
-      switch (ev.detail.action) {
-        case 'tap':
-        case 'hold':
-        case 'double_tap':
-          const config = this._config;
-          if (!config) return;
-          const action = ev.detail.action;
-          const localAction = this._evalActions(config, `${action}_action`);
-          const soundUrl = localAction[`${action}_action`].sound;
-          if (soundUrl) {
-            if (isMediaSourceContentId(soundUrl)) {
-              resolveMediaSource(this._hass!, soundUrl)
-                .then((resolved) => {
-                  const sound = new Audio(resolved.url);
-                  sound.play();
-                })
-                .catch(() => {
-                  console.error(`button-card: Error loading media source: ${soundUrl}`);
-                });
-            } else {
-              const sound = new Audio(soundUrl);
-              sound.play();
-            }
-          }
-          const haptic = localAction[`${action}_action`].haptic;
-          if (haptic) {
-            this._hapticIntercept();
-            forwardHaptic(this, haptic);
-          }
-          handleAction(this, this._hass!, localAction, action);
-          break;
-        default:
-          break;
+      this._runAction(ev.detail.action, { isIcon: false });
+    }
+  }
+
+  private _runAction(action: string, options: { isIcon: boolean }): void {
+    const config = this._config;
+    if (!config) return;
+    const actionKey = options.isIcon ? `icon_${action}_action` : `${action}_action`;
+    const localAction = this._evalActions(config, actionKey);
+    // Check if the action is configured (not 'none')
+    if (!localAction[actionKey] || localAction[actionKey].action === 'none') {
+      return;
+    }
+
+    const soundUrl = localAction[actionKey].sound;
+    if (soundUrl) {
+      if (isMediaSourceContentId(soundUrl)) {
+        resolveMediaSource(this._hass!, soundUrl)
+          .then((resolved) => {
+            const sound = new Audio(resolved.url);
+            sound.play();
+          })
+          .catch(() => {
+            console.error(`button-card: Error loading media source: ${soundUrl}`);
+          });
+      } else {
+        const sound = new Audio(soundUrl);
+        sound.play();
       }
     }
+    if (options.isIcon) {
+      localAction[`${action}_action`] = localAction[`icon_${action}_action`];
+    }
+    handleAction(this, this._hass!, localAction, action);
   }
 
   private _handleUnlockType(ev): void {
@@ -1544,5 +1683,11 @@ class ButtonCard extends LitElement {
 
   private _stopPropagation(ev: Event): void {
     ev.stopPropagation();
+  }
+
+  private _sendToParent(ev: Event): void {
+    ev.stopPropagation();
+    const event = new CustomEvent(ev.type, ev);
+    this.parentElement?.dispatchEvent(event);
   }
 }

@@ -1,3 +1,39 @@
+## [5.0.0-dev.3](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.2...v5.0.0-dev.3) (2025-09-17)
+
+### Bug Fixes
+
+* double triggers with icon_*_actions ([d9725d7](https://github.com/custom-cards/button-card/commit/d9725d75081225bdd660feeb9c8de1f928ac7682))
+
+## [5.0.0-dev.2](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.1...v5.0.0-dev.2) (2025-09-17)
+
+### Features
+
+* allow html tooltips using the lit html tag ([5bb800a](https://github.com/custom-cards/button-card/commit/5bb800a61fb0449492505471bd7ceaac75cd1489))
+
+### Bug Fixes
+
+* console error on click introduced in 5.0.0-dev.1 ([fc39748](https://github.com/custom-cards/button-card/commit/fc39748e0b0062c605abc09f9e6d2effd9424ceb)), closes [#1001](https://github.com/custom-cards/button-card/issues/1001)
+
+## [5.0.0-dev.1](https://github.com/custom-cards/button-card/compare/v4.3.0...v5.0.0-dev.1) (2025-09-16)
+
+### ⚠ BREAKING CHANGES
+
+* **color:** Card background color will always be `var
+(--card-background-color)` when state is inactive and `color_type:
+card`. You can set card background with state.
+
+### Features
+
+* Add `icon_*_action` support ([#984](https://github.com/custom-cards/button-card/issues/984)) ([4e02887](https://github.com/custom-cards/button-card/commit/4e028873a5c216f1ba98ba9e34fea944f73e970c)), closes [#739](https://github.com/custom-cards/button-card/issues/739)
+* Support update timer ([#981](https://github.com/custom-cards/button-card/issues/981)) ([4717feb](https://github.com/custom-cards/button-card/commit/4717feb8474d9ac8eab29af1321891a7d9de4b79)), closes [#436](https://github.com/custom-cards/button-card/issues/436)
+
+### Bug Fixes
+
+* **color:** inactive card background no longer inactive color when `colour_type: card` and `color` set. ([#987](https://github.com/custom-cards/button-card/issues/987)) ([b4f00f9](https://github.com/custom-cards/button-card/commit/b4f00f92f71df9df9d76e057f8a38a6e49a2cea7)), closes [#754](https://github.com/custom-cards/button-card/issues/754)
+* Embedded light card handle issue ([#989](https://github.com/custom-cards/button-card/issues/989)) ([d01ef37](https://github.com/custom-cards/button-card/commit/d01ef377ab751fa0607bd75107ac48fbfc04cf64)), closes [#427](https://github.com/custom-cards/button-card/issues/427) [#901](https://github.com/custom-cards/button-card/issues/901)
+* Hold action on picture entity ([#996](https://github.com/custom-cards/button-card/issues/996)) ([9f2501f](https://github.com/custom-cards/button-card/commit/9f2501f2cf3bff4e9a210f0969218fedc072464a)), closes [#994](https://github.com/custom-cards/button-card/issues/994)
+* Move while hold on touch devices ([#993](https://github.com/custom-cards/button-card/issues/993)) ([2c17386](https://github.com/custom-cards/button-card/commit/2c17386c64253c684f0d965ae76b0e3c09a7f002))
+
 ## [4.3.0](https://github.com/custom-cards/button-card/compare/v4.2.0...v4.3.0) (2025-08-31)
 
 ### Features
