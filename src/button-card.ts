@@ -1629,7 +1629,9 @@ class ButtonCard extends LitElement {
     const haptic = localAction[`${action}_action`].haptic;
     if (haptic) {
       this._hapticIntercept();
-      forwardHaptic(this, haptic);
+      if (haptic !== 'none') {
+        forwardHaptic(this, haptic);
+      }
     }
     handleAction(this, this._hass!, localAction, action);
   }
