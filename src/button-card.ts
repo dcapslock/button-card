@@ -1573,7 +1573,7 @@ class ButtonCard extends LitElement {
       ev.stopPropagation();
     }
   }
-  
+
   private _handleIconAction(ev: any): void {
     if (this._hasIconActions && ev.stopPropagation) {
       // stop event bubbling to avoid triggering card action
@@ -1625,6 +1625,11 @@ class ButtonCard extends LitElement {
     }
     if (options.isIcon) {
       localAction[`${action}_action`] = localAction[`icon_${action}_action`];
+    }
+    const haptic = localAction[`${action}_action`].haptic;
+    if (haptic) {
+      this._hapticIntercept();
+      forwardHaptic(this, haptic);
     }
     handleAction(this, this._hass!, localAction, action);
   }
