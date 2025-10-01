@@ -59,6 +59,10 @@ import {
   DOMAINS_PRESS,
   OVERRIDE_CARD_BACKGROUND_COLOR_COLORS,
   OVERRIDE_CARD_BACKGROUND_COLOR_COLOR_TYPE,
+  DEFAULT_LOCK_DURATION,
+  DEFAULT_LOCK_ICON,
+  DEFAULT_UNLOCK_ICON,
+  DEFAULT_STATE_COLOR,
 } from './common/const';
 import { handleAction } from './handle-action';
 import { fireEvent } from './common/fire-event';
@@ -83,7 +87,6 @@ import {
   formatDateWeekdayShort,
   formatDateYear,
 } from './common/format_date';
-import { DEFAULT_LOCK_DURATION, DEFAULT_LOCK_ICON, DEFAULT_UNLOCK_ICON } from './const';
 import { parseDuration } from './common/parse-duration';
 
 let helpers = (window as any).cardHelpers;
@@ -1013,7 +1016,7 @@ class ButtonCard extends LitElement {
   private _cardHtml(): TemplateResult {
     const configState = this._getMatchingConfigState(this._stateObj);
     this._computeIsClickable(this._stateObj, configState);
-    let color: string = 'var(--state-inactive-color)';
+    let color: string = DEFAULT_STATE_COLOR;
     const tooltipValue: string | undefined = this._config!.tooltip
       ? this._getTemplateOrValue(this._stateObj, this._config!.tooltip)
       : undefined;
