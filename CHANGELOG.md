@@ -1,3 +1,9 @@
+## [5.0.0-dev.5](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.4...v5.0.0-dev.5) (2025-10-01)
+
+### Bug Fixes
+
+* Event propagation to parent would not propagate the event properties ([#1017](https://github.com/custom-cards/button-card/issues/1017)) ([a2051d4](https://github.com/custom-cards/button-card/commit/a2051d49b3b53de63527e9ca6920497d38aa151c)), closes [#1015](https://github.com/custom-cards/button-card/issues/1015)
+
 ## [5.0.0-dev.4](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.3...v5.0.0-dev.4) (2025-09-30)
 
 ### ⚠ BREAKING CHANGES
