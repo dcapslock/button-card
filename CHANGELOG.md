@@ -1,3 +1,9 @@
+## [5.0.0-dev.6](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.5...v5.0.0-dev.6) (2025-10-03)
+
+### Features
+
+* **actions:** press and release support for momentary actions ([#1014](https://github.com/custom-cards/button-card/issues/1014)) ([76f2fd4](https://github.com/custom-cards/button-card/commit/76f2fd400e623ad676dd9e3730341975416a5524)), closes [#360](https://github.com/custom-cards/button-card/issues/360) [#249](https://github.com/custom-cards/button-card/issues/249)
+
 ## [5.0.0-dev.5](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.4...v5.0.0-dev.5) (2025-10-01)
 
 ### Bug Fixes
