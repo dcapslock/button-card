@@ -238,9 +238,14 @@ export interface AssistActionConfig extends BaseActionConfig {
   start_listening?: boolean;
 }
 
+export interface JavascriptActionConfig extends BaseActionConfig {
+  action: 'javascript';
+  javascript: string;
+}
+
 export interface BaseActionConfig {
   action: string;
-  confirmation?: ConfirmationRestrictionConfig;
+  confirmation?: ConfirmationRestrictionConfig | string;
   repeat?: number;
   repeat_limit?: number;
   sound?: string;
@@ -263,8 +268,27 @@ export type ActionConfig =
   | MoreInfoActionConfig
   | AssistActionConfig
   | NoActionConfig
-  | CustomActionConfig;
+  | CustomActionConfig
+  | JavascriptActionConfig
+  | string;
+
+export type EvaluatedActionConfig = Exclude<ActionConfig, string>;
 
 export type Constructor<T = any> = new (...args: any[]) => T;
 
 export type EntityPicture = Promise<string> | string | undefined;
+
+export interface ActionEventData {
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+  press_action?: ActionConfig;
+  release_action?: ActionConfig;
+  icon_tap_action?: ActionConfig;
+  icon_hold_action?: ActionConfig;
+  icon_double_tap_action?: ActionConfig;
+  icon_press_action?: ActionConfig;
+  icon_release_action?: ActionConfig;
+  entity?: string;
+  confirmation?: string;
+}
