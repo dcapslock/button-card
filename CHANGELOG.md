@@ -1,3 +1,9 @@
+## [5.0.0-dev.7](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.6...v5.0.0-dev.7) (2025-10-04)
+
+### Bug Fixes
+
+* Type error when using actions in templates ([#1020](https://github.com/custom-cards/button-card/issues/1020)) ([55956fe](https://github.com/custom-cards/button-card/commit/55956fee56fe65c53befb8812f9befc616f382a0)), closes [#1019](https://github.com/custom-cards/button-card/issues/1019)
+
 ## [5.0.0-dev.6](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.5...v5.0.0-dev.6) (2025-10-03)
 
 ### Features
