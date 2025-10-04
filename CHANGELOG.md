@@ -1,3 +1,18 @@
+## [5.0.0-dev.8](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.7...v5.0.0-dev.8) (2025-10-04)
+
+### ⚠ BREAKING CHANGES
+
+* **actions:** Some of you were using hacks to execute javascript
+actions. This release officially implements `action: javascript` and
+this is the **only supported** way to execute javascript actions going
+forward. Any other configuration might execute the javascript action
+while the card is first displayed. Please update your config accordingly
+and read the updated documentation.
+
+### Features
+
+* **actions:** Official support for native javascript actions ([#1022](https://github.com/custom-cards/button-card/issues/1022)) ([62163cc](https://github.com/custom-cards/button-card/commit/62163ccd5721ea6853d7f6baeccf281c0fe763a0)), closes [#1021](https://github.com/custom-cards/button-card/issues/1021)
+
 ## [5.0.0-dev.7](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.6...v5.0.0-dev.7) (2025-10-04)
 
 ### Bug Fixes
