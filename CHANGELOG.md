@@ -1,3 +1,16 @@
+## [5.0.0-dev.9](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.8...v5.0.0-dev.9) (2025-10-05)
+
+### ⚠ BREAKING CHANGES
+
+* **actions:** `*_action` and `icon_*_action` stricly follow what is
+allowed in the configuration of this card (see updated documentation).
+If you used some hacks, it might break. If those hacks were created to
+run javascript code, you can now use `action: javascript` instead.
+
+### Bug Fixes
+
+* **actions:** avoid executing invalid actions configurations ([#1023](https://github.com/custom-cards/button-card/issues/1023)) ([fe05b52](https://github.com/custom-cards/button-card/commit/fe05b529ea873f60ad6ffccbd9d9981c35449cf1))
+
 ## [5.0.0-dev.8](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.7...v5.0.0-dev.8) (2025-10-04)
 
 ### ⚠ BREAKING CHANGES
