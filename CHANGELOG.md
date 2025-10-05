@@ -1,3 +1,48 @@
+## [5.0.0-dev.8](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.7...v5.0.0-dev.8) (2025-10-04)
+
+### ⚠ BREAKING CHANGES
+
+* **actions:** Some of you were using hacks to execute javascript
+actions. This release officially implements `action: javascript` and
+this is the **only supported** way to execute javascript actions going
+forward. Any other configuration might execute the javascript action
+while the card is first displayed. Please update your config accordingly
+and read the updated documentation.
+
+### Features
+
+* **actions:** Official support for native javascript actions ([#1022](https://github.com/custom-cards/button-card/issues/1022)) ([62163cc](https://github.com/custom-cards/button-card/commit/62163ccd5721ea6853d7f6baeccf281c0fe763a0)), closes [#1021](https://github.com/custom-cards/button-card/issues/1021)
+
+## [5.0.0-dev.7](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.6...v5.0.0-dev.7) (2025-10-04)
+
+### Bug Fixes
+
+* Type error when using actions in templates ([#1020](https://github.com/custom-cards/button-card/issues/1020)) ([55956fe](https://github.com/custom-cards/button-card/commit/55956fee56fe65c53befb8812f9befc616f382a0)), closes [#1019](https://github.com/custom-cards/button-card/issues/1019)
+
+## [5.0.0-dev.6](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.5...v5.0.0-dev.6) (2025-10-03)
+
+### Features
+
+* **actions:** press and release support for momentary actions ([#1014](https://github.com/custom-cards/button-card/issues/1014)) ([76f2fd4](https://github.com/custom-cards/button-card/commit/76f2fd400e623ad676dd9e3730341975416a5524)), closes [#360](https://github.com/custom-cards/button-card/issues/360) [#249](https://github.com/custom-cards/button-card/issues/249)
+
+## [5.0.0-dev.5](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.4...v5.0.0-dev.5) (2025-10-01)
+
+### Bug Fixes
+
+* Event propagation to parent would not propagate the event properties ([#1017](https://github.com/custom-cards/button-card/issues/1017)) ([a2051d4](https://github.com/custom-cards/button-card/commit/a2051d49b3b53de63527e9ca6920497d38aa151c)), closes [#1015](https://github.com/custom-cards/button-card/issues/1015)
+
+## [5.0.0-dev.4](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.3...v5.0.0-dev.4) (2025-09-30)
+
+### ⚠ BREAKING CHANGES
+
+* **actions:** CSS variables `--mdc-ripple-*` are no longer supported.
+These have been replaced with `--button-card-ripple-*` variables. You
+will need to update your configuration.
+
+### Features
+
+* **actions:** migrate to ha-ripple ([#1011](https://github.com/custom-cards/button-card/issues/1011)) ([3c4dc92](https://github.com/custom-cards/button-card/commit/3c4dc9293f1fc58be3b7f83e8973895ea419abf3)), closes [#887](https://github.com/custom-cards/button-card/issues/887)
+
 ## [5.0.0-dev.3](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.2...v5.0.0-dev.3) (2025-09-17)
 
 ### Bug Fixes

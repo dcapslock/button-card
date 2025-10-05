@@ -5,6 +5,7 @@ export const styles = css`
     position: relative;
     display: block;
     --state-inactive-color: var(--state-icon-color);
+    --button-card-ripple-icon-inset-padding: 12px;
   }
 
   :host(.section) {
@@ -22,6 +23,12 @@ export const styles = css`
     align-items: center;
     line-height: normal;
 
+    --ha-ripple-color: var(--button-card-ripple-color);
+    --ha-ripple-hover-color: var(--ha-ripple-color, var(--button-card-ripple-hover-color));
+    --ha-ripple-pressed-color: var(--ha-ripple-color, var(--button-card-ripple-pressed-color));
+    --ha-ripple-hover-opacity: var(--button-card-ripple-hover-opacity, 0.08);
+    --ha-ripple-pressed-opacity: var(--button-card-ripple-pressed-opacity, 0.12);
+
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
     -khtml-user-select: none; /* Konqueror HTML */
@@ -36,6 +43,21 @@ export const styles = css`
   }
   ha-card.section {
     height: 100%;
+  }
+  ha-ripple[icon] {
+    inset: var(--button-card-ripple-icon-inset, var(--dynamic-ripple-icon-inset, 5px));
+    border-radius: var(--button-card-ripple-icon-border-radius, var(--ha-card-border-radius, 12px));
+    --md-ripple-color: var(--button-card-ripple-icon-color, var(--ha-ripple-color));
+    --md-ripple-hover-color: var(--button-card-ripple-icon-color, var(--ha-ripple-hover-color));
+    --md-ripple-pressed-color: var(--button-card-ripple-pressed-color, var(--ha-ripple-pressed-color));
+    --md-ripple-hover-opacity: var(
+      --button-card-ripple-icon-hover-opacity,
+      calc(var(--ha-ripple-hover-opacity, 0.08) + 0.05)
+    );
+    --md-ripple-pressed-opacity: var(
+      --button-card-ripple-icon-pressed-opacity,
+      calc(var(--ha-ripple-pressed-opacity, 0.12) + 0.05)
+    );
   }
   :host(.tooltip) .tooltiptext {
     pointer-events: none;

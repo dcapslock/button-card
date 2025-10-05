@@ -25,3 +25,8 @@ export const OVERRIDE_CARD_BACKGROUND_COLOR_COLOR_TYPE = ['card', 'label-card'];
 export const OVERRIDE_CARD_BACKGROUND_COLOR_COLORS = ['--ha-card-background', '--card-background-color'];
 
 export const DEFAULT_COLOR = 'var(--primary-text-color)';
+export const DEFAULT_STATE_COLOR = 'var(--state-inactive-color)';
+
+export const DEFAULT_LOCK_ICON = 'mdi:lock-outline';
+export const DEFAULT_UNLOCK_ICON = 'mdi:lock-open-outline';
+export const DEFAULT_LOCK_DURATION = 5;

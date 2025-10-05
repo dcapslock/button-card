@@ -1,7 +1,4 @@
 import { noChange } from 'lit-html';
-// import '@material/mwc-ripple';
-// tslint:disable-next-line
-import { Ripple } from '@material/mwc-ripple';
 import { fireEvent } from './common/fire-event';
 import { deepEqual } from './deep-equal';
 import { AttributePart, Directive, DirectiveParameters, directive } from 'lit-html/directive';
@@ -16,7 +13,7 @@ interface ActionHandlerType extends HTMLElement {
 }
 
 export interface ActionHandlerDetail {
-  action: 'hold' | 'tap' | 'double_tap';
+  action: 'hold' | 'tap' | 'double_tap' | 'press' | 'release';
 }
 
 export interface ActionHandlerOptions {
@@ -25,6 +22,7 @@ export interface ActionHandlerOptions {
   disabled?: boolean;
   repeat?: number;
   repeatLimit?: number;
+  isMomentary?: boolean;
 }
 
 interface ActionHandlerElement extends HTMLElement {
@@ -49,8 +47,6 @@ declare global {
 class ActionHandlerType extends HTMLElement implements ActionHandlerType {
   public holdTime = 500;
 
-  public ripple: Ripple;
-
   protected timer?: number;
 
   protected held = false;
@@ -65,23 +61,20 @@ class ActionHandlerType extends HTMLElement implements ActionHandlerType {
 
   private repeatCount = 0;
 
-  constructor() {
-    super();
-    this.ripple = document.createElement('mwc-ripple');
-  }
-
   public connectedCallback(): void {
     Object.assign(this.style, {
       position: 'fixed',
       width: isTouch ? '100px' : '50px',
       height: isTouch ? '100px' : '50px',
-      transform: 'translate(-50%, -50%)',
+      transform: 'translate(-50%, -50%) scale(0)',
       pointerEvents: 'none',
       zIndex: '999',
+      background: 'var(--primary-color)',
+      display: null,
+      opacity: '0.2',
+      borderRadius: '50%',
+      transition: 'transform 180ms ease-in-out',
     });
-
-    this.appendChild(this.ripple);
-    this.ripple.primary = true;
 
     ['touchcancel', 'mouseout', 'mouseup', 'touchmove', 'mousewheel', 'wheel', 'scroll'].forEach((ev) => {
       document.addEventListener(
@@ -139,6 +132,10 @@ class ActionHandlerType extends HTMLElement implements ActionHandlerType {
     }
 
     element.actionHandler.start = (ev: Event) => {
+      // ignore is set when event is re-dispatched to allow ripples
+      if ((ev as any).detail?.ignore) {
+        return;
+      }
       this.cancelled = false;
       let x;
       let y;
@@ -148,6 +145,15 @@ class ActionHandlerType extends HTMLElement implements ActionHandlerType {
       } else {
         x = (ev as MouseEvent).clientX;
         y = (ev as MouseEvent).clientY;
+      }
+
+      if (options.isMomentary) {
+        // ignore anything but left mouse button
+        if ((ev as any).button !== 0) {
+          return;
+        }
+        fireEvent(element, 'action', { action: 'press' });
+        return;
       }
 
       if (options.hasHold) {
@@ -172,6 +178,10 @@ class ActionHandlerType extends HTMLElement implements ActionHandlerType {
     };
 
     element.actionHandler.end = (ev: Event) => {
+      // ignore is set when event is re-dispatched to allow ripples
+      if ((ev as any).detail?.ignore) {
+        return;
+      }
       // Don't respond when moved or scrolled while touch
       if (['touchend', 'touchcancel'].includes(ev.type) && this.cancelled) {
         if (this.isRepeating && this.repeatTimeout) {
@@ -190,6 +200,10 @@ class ActionHandlerType extends HTMLElement implements ActionHandlerType {
       // Prevent mouse event if touch event
       if (ev.cancelable) {
         ev.preventDefault();
+      }
+      if (options.isMomentary) {
+        fireEvent(element, 'action', { action: 'release' });
+        return;
       }
       if (options.hasHold) {
         clearTimeout(this.timer);
@@ -249,21 +263,20 @@ class ActionHandlerType extends HTMLElement implements ActionHandlerType {
     element.addEventListener('keydown', element.actionHandler.handleKeyDown);
   }
 
-  private startAnimation(x: number, y: number): void {
+  private startAnimation(x: number, y: number) {
     Object.assign(this.style, {
       left: `${x}px`,
       top: `${y}px`,
-      display: null,
+      transform: 'translate(-50%, -50%) scale(1)',
     });
-    this.ripple.disabled = false;
-    this.ripple.startPress();
-    this.ripple.unbounded = true;
   }
 
-  private stopAnimation(): void {
-    this.ripple.endPress();
-    this.ripple.disabled = true;
-    this.style.display = 'none';
+  private stopAnimation() {
+    Object.assign(this.style, {
+      left: null,
+      top: null,
+      transform: 'translate(-50%, -50%) scale(0)',
+    });
   }
 }
 

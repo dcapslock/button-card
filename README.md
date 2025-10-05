@@ -46,6 +46,9 @@ Lovelace Button card for your entities.
     - [General](#general)
     - [Merging state by id](#merging-state-by-id)
     - [Variables](#variables)
+  - [Changing the feedback color during button/icon hover and click](#changing-the-feedback-color-during-buttonicon-hover-and-click)
+    - [Ripple and hover color CSS variables names](#ripple-and-hover-color-css-variables-names)
+    - [Icon hover and click size \& shape](#icon-hover-and-click-size--shape)
 - [Installation](#installation)
   - [Installation and tracking with `HACS`](#installation-and-tracking-with-hacs)
   - [Manual Installation](#manual-installation)
@@ -64,7 +67,6 @@ Lovelace Button card for your entities.
   - [Styling](#styling)
   - [Lock](#lock)
   - [Aspect Ratio](#aspect-ratio)
-  - [Changing the feedback color during a click](#changing-the-feedback-color-during-a-click)
 - [Community guides](#community-guides)
 - [Credits](#credits)
 
@@ -73,6 +75,7 @@ Lovelace Button card for your entities.
 - works with any toggleable entity
 - 6 available actions on **tap** and/or **hold** and/or **double click**: `none`, `toggle`, `more-info`, `navigate`, `url`, `assist` and `call-service`
 - **icon tap action**: Separate action when clicking the icon specifically which takes precedence over main card actions.
+- **momentary actions** for the card and/or icon: `press_action` and `release_action` (if used, replaces default actions)
 - state display (optional)
 - custom color (optional), or based on light rgb value/temperature
 - custom state definition with customizable color, icon and style (optional)
@@ -115,9 +118,13 @@ Lovelace Button card for your entities.
 | `tap_action` | object | optional | See [Action](#Action) | Define the type of action on click, if undefined, toggle will be used for domains that support toggle, or button press for input_button. |
 | `hold_action` | object | optional | See [Action](#Action) | Define the type of action on hold, if undefined, nothing happens. |
 | `double_tap_action` | object | optional | See [Action](#Action) | Define the type of action on double click, if undefined, nothing happens. |
+| `press_action` | object | optional | See [Action](#Action) | Define the type of action to execute immediately on button press. If defined, the only other card action allowed is `release_action` |
+| `release_action` | object | optional | See [Action](#Action) | Define the type of action to execute on button release. If defined, the only other card action allowed is `press_action` |
 | `icon_tap_action` | object | optional | See [Action](#Action) | Define the type of action on icon click, if undefined, nothing happens. When configured, the icon becomes clickable separately from the card. See note in [icon\_\*\_action](#icon__action) |
 | `icon_hold_action` | object | optional | See [Action](#Action) | Define the type of action on icon hold, if undefined, nothing happens. When configured, the icon becomes holdable separately from the card. See note in [icon\_\*\_action](#icon__action) |
 | `icon_double_tap_action` | object | optional | See [Action](#Action) | Define the type of action on icon double click, if undefined, nothing happens. When configured, the icon becomes double-clickable separately from the card. See note in [icon\_\*\_action](#icon__action) |
+| `icon_press_action` | object | optional | See [Action](#Action) | Define the type of action to execute immediately on icon press. If defined, the only other icon action allowed is `icon_release_action` |
+| `icon_release_action` | object | optional | See [Action](#Action) | Define the type of action to execute on icon release. If defined, the only other icon action allowed is `icon_press_action` |
 | `name` | string | optional | `Air conditioner` | Define an optional text to show below the icon. Supports templates, see [templates](#javascript-templates) |
 | `state_display` | string | optional | `On` | Override the way the state is displayed. Supports templates, see [templates](#javascript-templates) |
 | `label` | string | optional | Any string that you want | Display a label below the card. See [Layouts](#layout) for more information. Supports templates, see [templates](#javascript-templates) |
@@ -152,7 +159,7 @@ All the fields support templates, see [templates](#javascript-templates). You ma
 
 | Name | Type | Default | Supported options | Description |
 | --- | --- | --- | --- | --- |
-| `action` | string | `toggle` | `more-info`, `toggle`, `call-service`, `none`, `navigate`, `url`, `assist` | Action to perform |
+| `action` | string | `toggle` | `more-info`, `toggle`, `call-service`, `none`, `navigate`, `url`, `assist`, `javascript` | Action to perform |
 | `entity` | string | none | Any entity id | **Only valid for `action: more-info`** to override the entity on which you want to call `more-info` |
 | `target` | object | none |  | Only works with `call-service`. Follows the [home-assistant syntax](https://www.home-assistant.io/docs/scripts/service-calls/#targeting-areas-and-devices) |
 | `navigation_path` | string | none | Eg: `/lovelace/0/` | Path to navigate to (e.g. `/lovelace/0/`) when action defined as navigate |
@@ -160,9 +167,10 @@ All the fields support templates, see [templates](#javascript-templates). You ma
 | `service` | string | none | Any service | Service to call (e.g. `media_player.media_play_pause`) when `action` defined as `call-service` |
 | `data` or `service_data` | object | none | Any service data | Service data to include (e.g. `entity_id: media_player.bedroom`) when `action` defined as `call-service`. If your `data` requires an `entity_id`, you can use the keyword `entity`, this will actually call the service on the entity defined in the main configuration of this card. Useful for [configuration templates](#configuration-templates) |
 | `haptic` | string | none | `success`, `warning`, `failure`, `light`, `medium`, `heavy`, `selection` | Haptic feedback for the [Beta IOS App](http://home-assistant.io/ios/beta) |
-| `repeat` | number | none | eg: `500` | For a hold_action, you can optionally configure the action to repeat while the button is being held down (for example, to repeatedly increase the volume of a media player). Define the number of milliseconds between repeat actions here. |
-| `repeat_limit` | number | none | eg: `5` | For Hold action and if `repeat` if defined, it will stop calling the action after the `repeat_limit` has been reached. |
-| `confirmation` | object | none | See [confirmation](#confirmation) | Display a confirmation popup, overrides the default `confirmation` object |
+| `repeat` | number | none | eg: `500` | For a hold_action, you can optionally configure the action to repeat while the button is being held down (for example, to repeatedly increase the volume of a media player). Define the number of milliseconds between repeat actions here. Not available for `press` or `release` actions. |
+| `repeat_limit` | number | none | eg: `5` | For Hold action and if `repeat` if defined, it will stop calling the action after the `repeat_limit` has been reached. Not available for `press` or `release` actions. |
+| `confirmation` | object | none | See [confirmation](#confirmation) | Display a confirmation popup, overrides the default `confirmation` object. :warning: Not available for `javascript` actions |
+| `javascript` | string | none | A button card template which contains the javascript code to execute. |
 | `sound` | string | none | eg: `/local/click.mp3` | The path to an audio file (eg: `/local/click.mp3`, `https://some.audio.file/file.wav` or `media-source://media_source/local/click.mp3`). Plays a sound in your browswer when the corresponding action is used. Can be a different sound for each action. Supports also `media-source://` type URLs. This field supports templates. |
 
 Example - specifying fields directly:
@@ -194,6 +202,18 @@ variables:
     ]]]
 entity: light.bed_light
 tap_action: '[[[ return variables.my_action_object ]]]'
+```
+
+Example - Using a javascript action:
+
+```yaml
+type: custom:button-card
+icon: mdi:console
+name: Javascript Action
+tap_action:
+  action: javascript
+  javascript: |
+    [[[ alert("Hello from button card"); ]]]
 ```
 
 ### Confirmation
@@ -1144,6 +1164,89 @@ variables:
 name: '[[[ return variables.value; ]]]'
 ```
 
+### Changing the feedback color during button/icon hover and click
+
+#### Ripple and hover color CSS variables names
+
+Buttons will provide hover feedback (ripple) when an action is available. When the icon also has an action, the hover opacity will be slightly less to indicate this. When button/icon is pressed, the opacity will be less to indicate the button/icon is pressed. You can style color and opacity for hover and pressed states using the following CSS variables for `card`.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--button-card-ripple-color` | Follows `color` of button card | Base color of main button background when hovering over a button with an action |
+| `--button-card-ripple-hover-color` | `--button-card-ripple-color` | Color of main button background when hovering over a button with an action |
+| `--button-card-ripple-pressed-color` | `--button-card-ripple-color` | Color of main button background when button with an action is pressed |
+| `--button-card-ripple-hover-opacity` | 0.08 | Opacity of main button backgrond when hovering over a button with an action |
+| `--button-card-ripple-pressed-opacity` | 0.12 | Opacity of main button when a button with an action is pressed |
+| `--button-card-ripple-icon-color` | `--button-card-ripple-color` | Color of icon background when hovering over an icon with an action |
+| `--button-card-ripple-pressed-color` | `--button-card-ripple-hover-color` | Color of icon background when an icon with an action is pressed |
+| `--button-card-ripple-icon-hover-opacity` | `--button-card-ripple-hover-opacity` + 0.05 | Opacity of icon background when hovering over an icon with an action |
+| `--button-card-ripple-icon-pressed-opacity` | `--button-card-ripple-pressed-opacity` + 0.05 | Opacity of icon background when an icon with an action is pressed |
+
+Example to set hover to follow light color rather than standard state color:
+
+```yaml
+styles:
+  icon:
+    - color: var(--button-card-light-color)
+  card:
+    - --button-card-ripple-color: var(--button-card-light-color)
+```
+
+Example to set icon hover color and hover & pressed opacity:
+
+```yaml
+styles:
+  card:
+    - --button-card-ripple-icon-hover-opacity: 0.3
+    - --button-card-ripple-icon-press-opacity: 0.6
+    - --button-card-ripple-icon-color: red
+```
+
+#### Icon hover and click size & shape
+
+The size of the icon hover background is calculated dynamically from the icon size with padding.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--button-card-ripple-icon-inset` | Dynamic | Any valid [`inset`](https://developer.mozilla.org/en-US/docs/Web/CSS/inset) value. |
+| `--button-card-ripple-icon-border-radius` | `--ha-card-border-radius` or 12px | Any valid [`border-radius`](https://developer.mozilla.org/en-US/docs/Web/CSS/border-radius) value. |
+| `--button-card-ripple-icon-inset-padding` | 12 | A single numerical value used to pad out the icon hover background by this value in pixels. |
+
+Example to extend icon hover to button size but set different icon hover color:
+
+```yaml
+styles:
+  card:
+    - --button-card-ripple-icon-inset: 0
+    - --button-card-ripple-icon-color: red
+```
+
+Example to set a minimal inset for icon hover:
+
+```yaml
+styles:
+  card:
+    - --button-card-ripple-icon-inset: 5px
+```
+
+Example to set no padding for icon hover:
+
+```yaml
+styles:
+  card:
+    - --button-card-ripple-icon-inset-padding: 0
+```
+
+Example to set icon shape to pill on a tall icon/image:
+
+```yaml
+styles:
+  card:
+    - '--button-card-ripple-icon-color': red
+    - '--button-card-ripple-icon-border-radius': 9999px
+    - '--button-card-ripple-icon-inset': 0% 20% 20% 20%
+```
+
 ## Installation
 
 ### Installation and tracking with `HACS`
@@ -1774,19 +1877,6 @@ styles:
           name: 1/1.5
           icon: mdi:lightbulb
           aspect_ratio: 1/1.5
-```
-
-### Changing the feedback color during a click
-
-For dark cards, it can be usefull to change the feedback color when clicking the button. The ripple effect uses a `mwc-ripple` element so you can style it with the CSS variables it supports.
-
-For example:
-
-```yaml
-styles:
-  card:
-    - --mdc-ripple-color: blue
-    - --mdc-ripple-press-opacity: 0.5
 ```
 
 ## Community guides
