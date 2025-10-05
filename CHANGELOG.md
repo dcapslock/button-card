@@ -1,3 +1,9 @@
+## [5.0.1](https://github.com/custom-cards/button-card/compare/v5.0.0...v5.0.1) (2025-10-05)
+
+### Bug Fixes
+
+* **actions:** confirmation would not work ([cf034d2](https://github.com/custom-cards/button-card/commit/cf034d26a8950ce370ad294f9b7339185025f0fd)), closes [#1025](https://github.com/custom-cards/button-card/issues/1025) [#1026](https://github.com/custom-cards/button-card/issues/1026)
+
 ## [5.0.0](https://github.com/custom-cards/button-card/compare/v4.3.0...v5.0.0) (2025-10-05)
 
 ### ⚠ BREAKING CHANGES
