@@ -302,5 +302,4 @@ export interface ActionEventData {
   icon_press_action?: EvaluatedActionConfig;
   icon_release_action?: EvaluatedActionConfig;
   entity?: string;
-  confirmation?: ConfirmationRestrictionConfig;
 }

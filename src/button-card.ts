@@ -1726,8 +1726,8 @@ class ButtonCard extends LitElement {
       repeat_limit,
       sound,
       haptic,
+      confirmation,
     };
-    actionData.confirmation = confirmation;
     return actionData;
   }
 
