@@ -1,3 +1,9 @@
+## [5.0.2](https://github.com/custom-cards/button-card/compare/v5.0.1...v5.0.2) (2025-10-06)
+
+### Bug Fixes
+
+* **actions:** complex templates would break in specific cases ([#1029](https://github.com/custom-cards/button-card/issues/1029)) ([854b96a](https://github.com/custom-cards/button-card/commit/854b96aab6284596cfc467833e81c97d8b927924)), closes [#1028](https://github.com/custom-cards/button-card/issues/1028)
+
 ## [5.0.1](https://github.com/custom-cards/button-card/compare/v5.0.0...v5.0.1) (2025-10-05)
 
 ### Bug Fixes
