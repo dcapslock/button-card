@@ -26,7 +26,7 @@ export const styles = css`
     --ha-ripple-color: var(--button-card-ripple-color);
     --ha-ripple-hover-color: var(--ha-ripple-color, var(--button-card-ripple-hover-color));
     --ha-ripple-pressed-color: var(--ha-ripple-color, var(--button-card-ripple-pressed-color));
-    --ha-ripple-hover-opacity: var(--button-card-ripple-hover-opacity, 0.08);
+    --ha-ripple-hover-opacity: var(--button-card-ripple-hover-opacity, 0.04);
     --ha-ripple-pressed-opacity: var(--button-card-ripple-pressed-opacity, 0.12);
 
     -webkit-touch-callout: none; /* iOS Safari */
@@ -52,7 +52,7 @@ export const styles = css`
     --md-ripple-pressed-color: var(--button-card-ripple-pressed-color, var(--ha-ripple-pressed-color));
     --md-ripple-hover-opacity: var(
       --button-card-ripple-icon-hover-opacity,
-      calc(var(--ha-ripple-hover-opacity, 0.08) + 0.05)
+      calc(var(--ha-ripple-hover-opacity, 0.04) + 0.05)
     );
     --md-ripple-pressed-opacity: var(
       --button-card-ripple-icon-pressed-opacity,
@@ -78,6 +78,7 @@ export const styles = css`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    z-index: var(--ha-tooltip-z-index, 1000);
   }
   :host(.tooltip:hover) span.tooltiptext {
     opacity: 1;
@@ -105,6 +106,32 @@ export const styles = css`
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+  }
+
+  #spinner {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 8px 7px;
+    --ha-spinner-indicator-color: var(--button-card-spinner-color, var(--button-card-color));
+    --ha-spinner-size: var(--button-card-spinner-size, 1.5vw);
+    /* DO NOT override items below */
+    pointer-events: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    /* --ha-spinner-size: 100%; */
+  }
+  #spinner-background {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    opacity: var(--button-card-spinner-background-opacity, 0.4);
+    background: var(--button-card-spinner-background-color, var(--card-background-color, white));
   }
 
   #overlay {
@@ -136,13 +163,13 @@ export const styles = css`
   }
   @keyframes blink {
     0% {
-      opacity: 0;
-    }
-    50% {
       opacity: 1;
     }
-    100% {
+    50% {
       opacity: 0;
+    }
+    100% {
+      opacity: 1;
     }
   }
   @-webkit-keyframes rotating /* Safari and Chrome */ {

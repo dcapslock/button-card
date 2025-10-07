@@ -29,6 +29,8 @@ Lovelace Button card for your entities.
   - [Main Options](#main-options)
   - [Action](#action)
   - [Confirmation](#confirmation)
+  - [Protect](#protect)
+  - [Multi-actions](#multi-actions)
   - [Lock Object](#lock-object)
   - [State](#state)
   - [Available operators](#available-operators)
@@ -49,6 +51,7 @@ Lovelace Button card for your entities.
   - [Changing the feedback color during button/icon hover and click](#changing-the-feedback-color-during-buttonicon-hover-and-click)
     - [Ripple and hover color CSS variables names](#ripple-and-hover-color-css-variables-names)
     - [Icon hover and click size \& shape](#icon-hover-and-click-size--shape)
+  - [Spinner](#spinner)
 - [Installation](#installation)
   - [Installation and tracking with `HACS`](#installation-and-tracking-with-hacs)
   - [Manual Installation](#manual-installation)
@@ -94,6 +97,7 @@ Lovelace Button card for your entities.
 - [blink](#blink) animation support
 - rotating animation support
 - confirmation popup for sensitive items (optional) or [locking mecanism](#lock)
+- password or PIN protection for actions
 - haptic support for the [IOS companion App](https://companion.home-assistant.io/docs/integrations/haptics)
 - support for [custom_updater](https://github.com/custom-components/custom_updater) and [HACS](https://github.com/hacs/integration)
 
@@ -152,6 +156,9 @@ Lovelace Button card for your entities.
 | `card_size` | number | 3 | Any number | Configure the card size seen by the auto layout feature of lovelace (lovelace will multiply the value by about 50px) |
 | `tooltip` | string | optional | Any string | (Not supported on touchscreens) You can configure the tooltip displayed after hovering the card for 1.5 seconds . Supports templates, see [templates](#javascript-templates) |
 | `hidden` | boolean | optional | `false` | Shows or hides the card. Supports templates. |
+| `disable_kbd` | boolean | `false` | `true` or `false` | Disable keyboard `enter` and `space` capture on the button itself. Usefull when you have input fields inside the button. |
+| `spinner` | boolean | `false` | `true` or `false` | See [spinner](#spinner). If `true`, it will lock the card and display a spinner. You'll need to use a template or `state` to make this variable. |
+| `protect` | object | none | See [protect](#protect) | Display a password or PIN confirmation popup. |
 
 ### Action
 
@@ -159,7 +166,7 @@ All the fields support templates, see [templates](#javascript-templates). You ma
 
 | Name | Type | Default | Supported options | Description |
 | --- | --- | --- | --- | --- |
-| `action` | string | `toggle` | `more-info`, `toggle`, `call-service`, `perform-action`, `none`, `navigate`, `url`, `assist`, `javascript` | Action to perform |
+| `action` | string | `toggle` | `more-info`, `toggle`, `call-service`, `perform-action`, `none`, `navigate`, `url`, `assist`, `javascript`, `multi-actions` | Action to perform |
 | `entity` | string | none | Any entity id | **Only valid for `action: more-info` or `action: toggle`** to override the entity on which you want to call `more-info` |
 | `target` | object | none |  | Only works with `call-service` or `perform-action`. Follows the [home-assistant syntax](https://www.home-assistant.io/docs/scripts/service-calls/#targeting-areas-and-devices) |
 | `navigation_path` | string | none | Eg: `/lovelace/0/` | Path to navigate to (e.g. `/lovelace/0/`) when action defined as `navigate` |
@@ -171,8 +178,10 @@ All the fields support templates, see [templates](#javascript-templates). You ma
 | `haptic` | string | none | `success`, `warning`, `failure`, `light`, `medium`, `heavy`, `selection` | Haptic feedback for the [Beta IOS App](http://home-assistant.io/ios/beta) |
 | `repeat` | number | none | eg: `500` | For a hold_action, you can optionally configure the action to repeat while the button is being held down (for example, to repeatedly increase the volume of a media player). Define the number of milliseconds between repeat actions here. Not available for `press` or `release` actions. |
 | `repeat_limit` | number | none | eg: `5` | For Hold action and if `repeat` if defined, it will stop calling the action after the `repeat_limit` has been reached. Not available for `press` or `release` actions. |
-| `confirmation` | object | none | See [confirmation](#confirmation) | Display a confirmation popup, overrides the default `confirmation` object. :warning: Not available for `javascript` actions |
+| `confirmation` | object | none | See [confirmation](#confirmation) | Display a confirmation popup, overrides the default `confirmation` object. |
+| `protect` | object | none | See [protect](#protect) | Display a password or PIN confirmation popup. |
 | `javascript` | string | none | any javascript template | A button card javascript template which contains the javascript code to execute. |
+| `actions` | array of [Actions](#action) or delay | none | See [multi-actions](#multi-actions) | Only valid when `action` is set to `multi-actions`. Array of the actions you want to see executed in a row. |
 | `pipeline_id` | string | none | `last_used`, `prefered`, pipeline ID | Assist pipeline to use when the action is defined as `assist`. It can be either `last_used`, `preferred`, or a pipeline id. |
 | `start_listening` | boolean | none | `true`, `false` | If supported, listen for voice commands when opening the assist dialog and the action is defined as `assist`. |
 | `sound` | string | none | eg: `/local/click.mp3` | The path to an audio file (eg: `/local/click.mp3`, `https://some.audio.file/file.wav` or `media-source://media_source/local/click.mp3`). Plays a sound in your browswer when the corresponding action is used. Can be a different sound for each action. Supports also `media-source://` type URLs. This field supports templates. |
@@ -238,6 +247,134 @@ confirmation:
     - user: befc8496799848bda1824f2a8111e30a
 ```
 
+### Protect
+
+This will popup a dialog box with password or PIN confirmation before running the action.
+
+> [!WARNING]
+>
+> This is only running in your browser. This is **NOT** a real security feature. Anyone with a javascript console access to the UI or admin access can bypass this protection. Don't protect sensitive entities with this feature and use at your own risk.
+
+| Name | Type | Default | Supported options | Description |
+| --- | --- | --- | --- | --- |
+| `pin` | string | none | any string composed of digits only | This will prompt for a PIN before running the action. Make sure you set this as a **string** like so `"1234"` |
+| `password` | string | none | any string | Setting this field will prompt for a password before running the action. |
+| `failure_message` | string | Fixed failure message | any string | If password or PIN is wrong, a toast will popup with this `failure_message` inside. |
+| `success_message` | string | none | any string | If password or PIN is valid, a toast will popup with the content of `success_message` inside. |
+
+Protect can be defined at the card level, or at the action level. Both objects supports templating. The action level takes precedance over the card level, if both are defined, objects will be "merged" together (see eg. below).
+
+Eg:
+
+```yaml
+type: custom:button-card
+entity: light.aquarium
+tap_action:
+  action: toggle
+hold_action:
+  action: perform-action
+  perform_action: switch.toggle
+  target:
+    entity_id: switch.aquarium_pump
+  protect:
+    pin: '123456'
+```
+
+Defining a PIN for all actions but one:
+
+```yaml
+type: custom:button-card
+entity: light.aquarium
+protect: # globally enables the PIN for all actions
+  pin: '1234'
+  success_message: 'PIN is correct!'
+  failure_message: 'PIN is wrong!'
+tap_action:
+  action: toggle
+hold_action:
+  action: perform-action
+  perform_action: switch.toggle
+  target:
+    entity_id: switch.aquarium_pump
+icon_tap_action:
+  action: more-info
+  entity: sensor.aquarium_temperature
+  protect:
+    pin: '' # Setting this to an empty string disables the pin for this action only.
+```
+
+### Multi-actions
+
+The `action: multi-actions` enables you to run several actions in a row with optional delay between them.
+
+> [!IMPORTANT]
+>
+> This **only** runs in your browser so there are limitations.
+>
+> All the actions will be fired back to back without waiting for the previous action to finish.
+>
+> Also, because it's running in the browser, it means that if you navigate away from the page where the button-card is displayed while there are still some actions queued, they won't be executed.
+>
+> This should only be used to run `navigate`, `javascript` or `fire-dom-event` actions alongside a normal service call and not as a replacement for a backend script !
+
+Each entry of the `actions` array should be an action. Note that `repeat`, `repeat_limit`, `sound`, `confirmation`, `protect` and `haptic` are not taken into account in the nested actions, if you set any of those properties, it will be ignored.
+
+There are 2 special entries which can be used in the array:
+
+- `delay`: This entry takes a string (parsed with natural language, so you can use `3s` or `1min`) or a number (milliseconds) as an argument and is the delay to wait before firing the next action. It can be templated too.
+
+- `wait_completion`: This entry takes a button card JS template as an argument. The template needs to return `true` or `false`. It will run this template every 1/2 second until the template returns `true` and then run the next step.
+
+  With `wait_completion`, you can also specify a `timeout` value (same format as `delay`). If the timeout is exceeded, it will go to the next step.
+
+  Again, if the card disapears from the screen, it will stop working.
+
+Let's go for some examples:
+
+```yaml
+type: 'custom:button-card'
+icon: mdi:console
+name: multi-actions
+variables:
+  delay: 3s
+tap_action:
+  confirmation:
+    text: Do you want to run multiple-actions?
+  action: multi-actions
+  actions:
+    - action: call-service
+      service: light.toggle
+      service_data:
+        entity_id: light.test_light
+    - action: javascript
+      javascript: '[[[ this._sendToastMessage(`Waiting ${variables.delay}...`); ]]]'
+    - delay: '[[[ return variables.delay; ]]]'
+    - action: call-service
+      service: light.toggle
+      service_data:
+        entity_id: light.test_light
+```
+
+With `wait_completion`:
+
+```yaml
+type: 'custom:button-card'
+icon: mdi:console
+name: MA script completion
+tap_action:
+  action: multi-actions
+  actions:
+    - action: perform-action
+      perform_action: script.turn_on
+      target:
+        entity_id: script.delay_script # This script runs for 10 seconds, keeping its state to "on"
+    - wait_completion: '[[[ return states["script.delay_script"].state === "off" ]]]'
+      timeout: 15s # safeguard
+    # This will be called once the script has finished running (state will be "off")
+    - action: navigate
+      navigation_path: /lovalace/0
+```
+
 ### Lock Object
 
 This will display a normal button with a lock symbol in the corner. Clicking the button will make the lock go away and enable the button to be manoeuvred for `duration` seconds (5 by default).
@@ -295,6 +432,7 @@ styles:
 | `entity_picture` | string | optional | Can be any of `/local/*` file or a URL | Will override the icon/the default entity_picture with your own image for this state. Best is to use a square image. Supports templates, see [templates](#javascript-templates) |
 | `label` | string | optional | Any string that you want | Display a label below the card. See [Layouts](#layout) for more information. Supports templates, see [templates](#javascript-templates) |
 | `state_display` | string | optional | `On` | If defined, override the way the state is displayed. Supports templates, see [templates](#javascript-templates) |
+| `spinner` | boolean | `false` | `true` or `false` | See [spinner](#spinner). If `true`, it will lock the card and display a spinner. You'll need to use a template or `state` to make this variable. |
 
 ### Available operators
 
@@ -552,6 +690,7 @@ The `style` object members are:
 - `label`: styles for the label
 - `lock`: styles for the lock icon (see [here](https://github.com/custom-cards/button-card/blob/master/src/styles.ts#L73-L86) for the default style)
 - `tooltip`: styles for the tooltip overlay (see [here](https://github.com/custom-cards/button-card/blob/master/src/styles.ts#L30-L46))
+- `spinner`: styles for the spinner overlay
 - `custom_fields`: styles for each of your custom fields. See [Custom Fields](#custom-fields)
 
 ```yaml
@@ -1179,7 +1318,7 @@ Buttons will provide hover feedback (ripple) when an action is available. When t
 | `--button-card-ripple-color` | Follows `color` of button card | Base color of main button background when hovering over a button with an action |
 | `--button-card-ripple-hover-color` | `--button-card-ripple-color` | Color of main button background when hovering over a button with an action |
 | `--button-card-ripple-pressed-color` | `--button-card-ripple-color` | Color of main button background when button with an action is pressed |
-| `--button-card-ripple-hover-opacity` | 0.08 | Opacity of main button backgrond when hovering over a button with an action |
+| `--button-card-ripple-hover-opacity` | 0.04 | Opacity of main button backgrond when hovering over a button with an action |
 | `--button-card-ripple-pressed-opacity` | 0.12 | Opacity of main button when a button with an action is pressed |
 | `--button-card-ripple-icon-color` | `--button-card-ripple-color` | Color of icon background when hovering over an icon with an action |
 | `--button-card-ripple-pressed-color` | `--button-card-ripple-hover-color` | Color of icon background when an icon with an action is pressed |
@@ -1250,6 +1389,56 @@ styles:
     - '--button-card-ripple-icon-border-radius': 9999px
     - '--button-card-ripple-icon-inset': 0% 20% 20% 20%
 ```
+
+### Spinner
+
+A spinner can be enabled on the card to give some feedback to the user. Eg: display the spinner while a script is running.
+
+By default, the spinner will overlay the whole card and disable actions while active.
+
+Multiple CSS variables are also available for its configuration and you can configure it using the `spinner` entry in `styles`.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--button-card-spinner-color` | Follows `color` of button card | Color of the spinner |
+| `--button-card-spinner-size` | `1.5vw` | The size of the spinner (it's a "font", so percentages are not accepted here) |
+| `--button-card-spinner-background-opacity` | `0.4` | The opacity of the overlay which sits on top of the card. |
+| `--button-card-spinner-background-color` | `--card-background-color` or white if undefined | The color of the overlay mask |
+
+Some examples:
+
+- Spinner displayed while a script is running, actions are locked
+
+  ```yaml
+  type: 'custom:button-card'
+  entity: script.delay_script
+  name: Spinner script main
+  tap_action:
+    action: perform-action
+    perform_action: script.delay_script
+  show_label: state
+  spinner: '[[[ return entity.state === "on" ]]]'
+  ```
+
+- Spinner displayed in `red` while a script is running using `state`, interactions are unlocked and overlay color is disabled.
+
+  ```yaml
+  type: 'custom:button-card'
+  entity: script.delay_script
+  name: Spinner script state
+  tap_action:
+    action: perform-action
+    perform_action: script.delay_script
+  show_label: state
+  state:
+    - value: 'on'
+      spinner: true
+      styles:
+        spinner:
+          - pointer-events: none !important # this unlocks the overlay
+          - --button-card-spinner-color: red
+          - --button-card-spinner-background-color: none
+  ```
 
 ## Installation
 

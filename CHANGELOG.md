@@ -1,3 +1,83 @@
+## [5.1.0-dev.3](https://github.com/custom-cards/button-card/compare/v5.1.0-dev.2...v5.1.0-dev.3) (2025-10-07)
+
+### Features
+
+* **protect:** allow configuring `protect` at the card level ([#1049](https://github.com/custom-cards/button-card/issues/1049)) ([1680330](https://github.com/custom-cards/button-card/commit/16803303a82b135ccbe58e17fce6d8826b5840f3)), closes [#1044](https://github.com/custom-cards/button-card/issues/1044)
+* **protect:** Support for `success_message` ([#1048](https://github.com/custom-cards/button-card/issues/1048)) ([78c7151](https://github.com/custom-cards/button-card/commit/78c71513c15d2c101a4e58acec62b6dedf668405)), closes [#1046](https://github.com/custom-cards/button-card/issues/1046)
+* **spinner:** Display a configurable spinning wheel (eg. while a script is running) ([#1047](https://github.com/custom-cards/button-card/issues/1047)) ([fb1963e](https://github.com/custom-cards/button-card/commit/fb1963ec057a5f11a4a16d15519c9a32fc1e665c))
+
+## [5.1.0-dev.2](https://github.com/custom-cards/button-card/compare/v5.1.0-dev.1...v5.1.0-dev.2) (2025-10-07)
+
+### Features
+
+* `disable_kbd` option to disable keyboard capture on the card ([#1040](https://github.com/custom-cards/button-card/issues/1040)) ([f108a52](https://github.com/custom-cards/button-card/commit/f108a52ac47bb8bf9c313769b8d14bb241ede268)), closes [#1032](https://github.com/custom-cards/button-card/issues/1032)
+* **actions:** call multiple actions in a row for any `*_action` or `icon_*_action` with the new `multi-actions` action ([#1041](https://github.com/custom-cards/button-card/issues/1041)) ([e3a50d8](https://github.com/custom-cards/button-card/commit/e3a50d8fabbcb0518fa8f83f7c345ce1447fb075))
+
+## [5.1.0-dev.1](https://github.com/custom-cards/button-card/compare/v5.0.2...v5.1.0-dev.1) (2025-10-07)
+
+### Features
+
+* **actions:** confirmation support for javascript, PIN & Password confirmation support ([#1033](https://github.com/custom-cards/button-card/issues/1033)) ([6632114](https://github.com/custom-cards/button-card/commit/6632114e76fdef560524b1ab19b2d849450ae152)), closes [#1030](https://github.com/custom-cards/button-card/issues/1030)
+
+### Bug Fixes
+
+* **tooltip:** Set default z-index so long/wide tooltips are always visible. ([#1039](https://github.com/custom-cards/button-card/issues/1039)) ([45033df](https://github.com/custom-cards/button-card/commit/45033df2d8d011243c99de99cf2899e675f8e922)), closes [#1035](https://github.com/custom-cards/button-card/issues/1035)
+* Update --button-card-riple-hover-opacity to 0.04 to match HA button defaults ([#1037](https://github.com/custom-cards/button-card/issues/1037)) ([17917b8](https://github.com/custom-cards/button-card/commit/17917b895e087a8c420bd270b40e76fc0020c060)), closes [#1036](https://github.com/custom-cards/button-card/issues/1036)
+
+## [5.0.2](https://github.com/custom-cards/button-card/compare/v5.0.1...v5.0.2) (2025-10-06)
+
+### Bug Fixes
+
+* **actions:** complex templates would break in specific cases ([#1029](https://github.com/custom-cards/button-card/issues/1029)) ([854b96a](https://github.com/custom-cards/button-card/commit/854b96aab6284596cfc467833e81c97d8b927924)), closes [#1028](https://github.com/custom-cards/button-card/issues/1028)
+
+## [5.0.1](https://github.com/custom-cards/button-card/compare/v5.0.0...v5.0.1) (2025-10-05)
+
+### Bug Fixes
+
+* **actions:** confirmation would not work ([cf034d2](https://github.com/custom-cards/button-card/commit/cf034d26a8950ce370ad294f9b7339185025f0fd)), closes [#1025](https://github.com/custom-cards/button-card/issues/1025) [#1026](https://github.com/custom-cards/button-card/issues/1026)
+
+## [5.0.0](https://github.com/custom-cards/button-card/compare/v4.3.0...v5.0.0) (2025-10-05)
+
+### ⚠ BREAKING CHANGES
+
+* **actions:** `*_action` and `icon_*_action` stricly follow what is
+allowed in the configuration of this card (see updated documentation).
+If you used some hacks, it might break. If those hacks were created to
+run javascript code, you can now use `action: javascript` instead.
+* **actions:** Some of you were using hacks to execute javascript
+actions. This release officially implements `action: javascript` and
+this is the **only supported** way to execute javascript actions going
+forward. Any other configuration might execute the javascript action
+while the card is first displayed. Please update your config accordingly
+and read the updated documentation.
+* **actions:** CSS variables `--mdc-ripple-*` are no longer supported.
+These have been replaced with `--button-card-ripple-*` variables. You
+will need to update your configuration.
+* **color:** Card background color will always be `var
+(--card-background-color)` when state is inactive and `color_type:
+card`. You can set card background with state.
+
+### Features
+
+* **actions:** migrate to ha-ripple ([#1011](https://github.com/custom-cards/button-card/issues/1011)) ([3c4dc92](https://github.com/custom-cards/button-card/commit/3c4dc9293f1fc58be3b7f83e8973895ea419abf3)), closes [#887](https://github.com/custom-cards/button-card/issues/887)
+* **actions:** Official support for native javascript actions ([#1022](https://github.com/custom-cards/button-card/issues/1022)) ([62163cc](https://github.com/custom-cards/button-card/commit/62163ccd5721ea6853d7f6baeccf281c0fe763a0)), closes [#1021](https://github.com/custom-cards/button-card/issues/1021)
+* **actions:** press and release support for momentary actions ([#1014](https://github.com/custom-cards/button-card/issues/1014)) ([76f2fd4](https://github.com/custom-cards/button-card/commit/76f2fd400e623ad676dd9e3730341975416a5524)), closes [#360](https://github.com/custom-cards/button-card/issues/360) [#249](https://github.com/custom-cards/button-card/issues/249)
+* Add `icon_*_action` support ([#984](https://github.com/custom-cards/button-card/issues/984)) ([4e02887](https://github.com/custom-cards/button-card/commit/4e028873a5c216f1ba98ba9e34fea944f73e970c)), closes [#739](https://github.com/custom-cards/button-card/issues/739)
+* allow html tooltips using the lit html tag ([5bb800a](https://github.com/custom-cards/button-card/commit/5bb800a61fb0449492505471bd7ceaac75cd1489))
+* Support update timer ([#981](https://github.com/custom-cards/button-card/issues/981)) ([4717feb](https://github.com/custom-cards/button-card/commit/4717feb8474d9ac8eab29af1321891a7d9de4b79)), closes [#436](https://github.com/custom-cards/button-card/issues/436)
+
+### Bug Fixes
+
+* **actions:** avoid executing invalid actions configurations ([#1023](https://github.com/custom-cards/button-card/issues/1023)) ([fe05b52](https://github.com/custom-cards/button-card/commit/fe05b529ea873f60ad6ffccbd9d9981c35449cf1))
+* **color:** inactive card background no longer inactive color when `colour_type: card` and `color` set. ([#987](https://github.com/custom-cards/button-card/issues/987)) ([b4f00f9](https://github.com/custom-cards/button-card/commit/b4f00f92f71df9df9d76e057f8a38a6e49a2cea7)), closes [#754](https://github.com/custom-cards/button-card/issues/754)
+* console error on click introduced in 5.0.0-dev.1 ([fc39748](https://github.com/custom-cards/button-card/commit/fc39748e0b0062c605abc09f9e6d2effd9424ceb)), closes [#1001](https://github.com/custom-cards/button-card/issues/1001)
+* double triggers with icon_*_actions ([d9725d7](https://github.com/custom-cards/button-card/commit/d9725d75081225bdd660feeb9c8de1f928ac7682))
+* Embedded light card handle issue ([#989](https://github.com/custom-cards/button-card/issues/989)) ([d01ef37](https://github.com/custom-cards/button-card/commit/d01ef377ab751fa0607bd75107ac48fbfc04cf64)), closes [#427](https://github.com/custom-cards/button-card/issues/427) [#901](https://github.com/custom-cards/button-card/issues/901)
+* Event propagation to parent would not propagate the event properties ([#1017](https://github.com/custom-cards/button-card/issues/1017)) ([a2051d4](https://github.com/custom-cards/button-card/commit/a2051d49b3b53de63527e9ca6920497d38aa151c)), closes [#1015](https://github.com/custom-cards/button-card/issues/1015)
+* Hold action on picture entity ([#996](https://github.com/custom-cards/button-card/issues/996)) ([9f2501f](https://github.com/custom-cards/button-card/commit/9f2501f2cf3bff4e9a210f0969218fedc072464a)), closes [#994](https://github.com/custom-cards/button-card/issues/994)
+* Move while hold on touch devices ([#993](https://github.com/custom-cards/button-card/issues/993)) ([2c17386](https://github.com/custom-cards/button-card/commit/2c17386c64253c684f0d965ae76b0e3c09a7f002))
+* Type error when using actions in templates ([#1020](https://github.com/custom-cards/button-card/issues/1020)) ([55956fe](https://github.com/custom-cards/button-card/commit/55956fee56fe65c53befb8812f9befc616f382a0)), closes [#1019](https://github.com/custom-cards/button-card/issues/1019)
+
 ## [5.0.0-dev.9](https://github.com/custom-cards/button-card/compare/v5.0.0-dev.8...v5.0.0-dev.9) (2025-10-05)
 
 ### ⚠ BREAKING CHANGES

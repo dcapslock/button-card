@@ -53,6 +53,9 @@ export interface ButtonCardConfig {
   section_mode?: boolean;
   update_timer?: number;
   hidden?: string | boolean;
+  disable_kbd?: boolean;
+  spinner?: boolean;
+  protect?: ButtonCardProtect;
 }
 
 export interface GridOptions {
@@ -108,6 +111,9 @@ export interface ExternalButtonCardConfig {
   grid_options?: GridOptions;
   update_timer?: number;
   hidden?: string | boolean;
+  disable_kbd?: boolean;
+  spinner?: boolean;
+  protect?: ButtonCardProtect;
 }
 
 export type Layout =
@@ -154,6 +160,7 @@ export interface StateConfig {
   label?: string;
   custom_fields?: CustomFields;
   state_display?: string;
+  spinner?: boolean;
 }
 
 export interface StylesConfig {
@@ -199,8 +206,16 @@ export interface ButtonCardEmbeddedCardsConfig {
   [key: string]: string | undefined;
 }
 
+export interface ButtonCardProtect {
+  pin?: string;
+  password?: string;
+  failure_message?: string;
+  success_message?: string;
+}
+
 export interface ToggleActionConfig extends BaseActionConfig {
   action: 'toggle';
+  entity?: string;
 }
 
 export interface CallServiceActionConfig extends BaseActionConfig {
@@ -234,6 +249,7 @@ export interface UrlActionConfig extends BaseActionConfig {
 
 export interface MoreInfoActionConfig extends BaseActionConfig {
   action: 'more-info';
+  entity?: string;
 }
 
 export interface NoActionConfig extends BaseActionConfig {
@@ -255,6 +271,11 @@ export interface JavascriptActionConfig extends BaseActionConfig {
   javascript?: string;
 }
 
+export interface MultiActionsActionConfig extends BaseActionConfig {
+  action: 'multi-actions';
+  actions?: string;
+}
+
 export interface BaseActionConfig {
   action: string;
   confirmation?: ConfirmationRestrictionConfig | string;
@@ -262,6 +283,7 @@ export interface BaseActionConfig {
   repeat_limit?: number;
   sound?: string;
   haptic?: 'light' | 'medium' | 'heavy' | 'selection' | 'success' | 'warning' | 'error' | 'none';
+  protect?: ButtonCardProtect;
 }
 
 export interface ConfirmationRestrictionConfig {
@@ -284,6 +306,7 @@ export type ActionConfig =
   | NoActionConfig
   | CustomActionConfig
   | JavascriptActionConfig
+  | MultiActionsActionConfig
   | string;
 
 export type EvaluatedActionConfig = Exclude<ActionConfig, string>;
@@ -294,15 +317,38 @@ export type EntityPicture = Promise<string> | string | undefined;
 
 export interface ActionEventData {
   tap_action?: EvaluatedActionConfig;
-  hold_action?: EvaluatedActionConfig;
-  double_tap_action?: EvaluatedActionConfig;
-  press_action?: EvaluatedActionConfig;
-  release_action?: EvaluatedActionConfig;
-  icon_tap_action?: EvaluatedActionConfig;
-  icon_hold_action?: EvaluatedActionConfig;
-  icon_double_tap_action?: EvaluatedActionConfig;
-  icon_press_action?: EvaluatedActionConfig;
-  icon_release_action?: EvaluatedActionConfig;
   entity?: string;
-  confirmation?: ConfirmationRestrictionConfig;
 }
+
+export interface ActionCustomEvent extends CustomEvent {
+  detail: {
+    buttonCardCustomAction: CustomButtonCardActionEvent;
+  };
+}
+
+export interface CustomActionBase {
+  callback: (ev: ActionCustomEvent) => void;
+  this?: any;
+}
+
+export interface CustomActionJavascript extends CustomActionBase {
+  type: 'javascript';
+  data?: {
+    javascript?: string;
+  };
+}
+
+export interface CustomActionMultiActions extends CustomActionBase {
+  type: 'multi-actions';
+  data?: {
+    multiActions?: Array<ActionConfig | CustomActionMultiActionsDelay>;
+  };
+}
+
+export interface CustomActionMultiActionsDelay {
+  delay?: string | number;
+  wait_completion?: boolean;
+  timeout?: number | string;
+}
+
+export type CustomButtonCardActionEvent = CustomActionJavascript | CustomActionMultiActions;
