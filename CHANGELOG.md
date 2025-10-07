@@ -1,3 +1,11 @@
+## [5.1.0-dev.3](https://github.com/custom-cards/button-card/compare/v5.1.0-dev.2...v5.1.0-dev.3) (2025-10-07)
+
+### Features
+
+* **protect:** allow configuring `protect` at the card level ([#1049](https://github.com/custom-cards/button-card/issues/1049)) ([1680330](https://github.com/custom-cards/button-card/commit/16803303a82b135ccbe58e17fce6d8826b5840f3)), closes [#1044](https://github.com/custom-cards/button-card/issues/1044)
+* **protect:** Support for `success_message` ([#1048](https://github.com/custom-cards/button-card/issues/1048)) ([78c7151](https://github.com/custom-cards/button-card/commit/78c71513c15d2c101a4e58acec62b6dedf668405)), closes [#1046](https://github.com/custom-cards/button-card/issues/1046)
+* **spinner:** Display a configurable spinning wheel (eg. while a script is running) ([#1047](https://github.com/custom-cards/button-card/issues/1047)) ([fb1963e](https://github.com/custom-cards/button-card/commit/fb1963ec057a5f11a4a16d15519c9a32fc1e665c))
+
 ## [5.1.0-dev.2](https://github.com/custom-cards/button-card/compare/v5.1.0-dev.1...v5.1.0-dev.2) (2025-10-07)
 
 ### Features
