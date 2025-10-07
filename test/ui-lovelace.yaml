@@ -1480,6 +1480,30 @@ views:
             grid_options:
               rows: 1
               columns: 12
+          - type: custom:button-card
+            entity: switch.skylight
+            name: Embedded
+            tap_action:
+              action: toggle
+            section_mode: true
+            styles:
+              custom_fields:
+                item1:
+                  - pointer-events: none !important
+
+            custom_fields:
+              item1:
+                card:
+                  styles:
+                    icon:
+                      - pointer-events: '[[[[ return window.getComputedStyle(this)?.getPropertyValue("pointer-events") || null ]]]]'
+                  type: custom:button-card
+                  entity: switch.skylight
+                  icon_tap_action:
+                    action: more-info
+            grid_options:
+              rows: 2
+              columns: 4
           - type: 'custom:button-card'
             entity: switch.skylight
             name: navigate
@@ -1568,16 +1592,46 @@ views:
               rows: 2
               columns: 4
           - type: 'custom:button-card'
+            icon: mdi:lock
+            name: toggle password
+            tap_action:
+              protect:
+                password: '1234'
+                failure_message: 'Bad password!'
+              action: perform-action
+              perform_action: light.toggle
+              data:
+                entity_id: light.test_light
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+          - type: 'custom:button-card'
             icon: mdi:console
-            name: javascript action
+            name: js action pin
+            tap_action:
+              protect:
+                pin: '1234'
+              action: javascript
+              javascript: |
+                [[[
+                  alert(`Hello from ${this._config.name}`);
+                ]]]
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+          - type: 'custom:button-card'
+            icon: mdi:console
+            name: js confirm
             tap_action:
               action: javascript
-              javascript: >
+              confirmation:
+                text: '[[[ return "Are you sure you want to run JS from " + this._config.name + " ?" ]]]'
+              javascript: |
                 [[[
-                  alert("Hello from button card");
+                  alert(`Hello from ${this._config.name}`);
                 ]]]
-
-
             section_mode: true
             grid_options:
               rows: 2
@@ -1663,6 +1717,19 @@ views:
             hold_action:
               action: url
               url_path: https://www.google.com
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+          - type: 'custom:button-card'
+            entity: light.test_light
+            name: hold toggle PIN
+            tap_action:
+              action: none
+            hold_action:
+              protect:
+                pin: '1234'
+              action: toggle
             section_mode: true
             grid_options:
               rows: 2
