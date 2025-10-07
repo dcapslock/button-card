@@ -35,6 +35,8 @@ import {
   ActionCustomEvent,
   JavascriptActionConfig,
   CallServiceActionConfig,
+  MultiActionsActionConfig,
+  CustomActionMultiActionsDelay,
 } from './types/types';
 import { actionHandler } from './action-handler';
 import {
@@ -151,6 +153,8 @@ class ButtonCard extends LitElement {
   @property() private _updateTimerMS?: number;
 
   @property({ type: Boolean, reflect: true }) preview = false;
+
+  @property({ type: Boolean }) private _spinnerActive = false;
 
   @queryAsync('ha-ripple') private _ripple!: Promise<HaRipple | null>;
 
@@ -428,7 +432,12 @@ class ButtonCard extends LitElement {
       }
     }
     const forceUpdate =
-      this._triggersAll || changedProps.has('_timeRemaining') || changedProps.has('_updateTimerMS') ? true : false;
+      this._triggersAll ||
+      changedProps.has('_timeRemaining') ||
+      changedProps.has('_updateTimerMS') ||
+      changedProps.has('_spinnerActive')
+        ? true
+        : false;
     if (forceUpdate || myHasConfigOrEntityChanged(this, changedProps)) {
       this._expandTriggerGroups();
       return true;
@@ -1127,8 +1136,10 @@ class ButtonCard extends LitElement {
     let buttonColor = color;
     let cardStyle: any = {};
     let lockStyle: any = {};
+    let spinnerStyle: any = {};
     const aspectRatio: any = {};
     const lockStyleFromConfig = this._buildStyleGeneric(this._stateObj, configState, 'lock');
+    const spinnerStyleFromConfig = this._buildStyleGeneric(this._stateObj, configState, 'spinner');
     const configCardStyle = this._buildStyleGeneric(this._stateObj, configState, 'card');
     const tooltipStyleFromConfig = this._buildStyleGeneric(this._stateObj, configState, 'tooltip');
     const classList: ClassInfo = {
@@ -1175,7 +1186,9 @@ class ButtonCard extends LitElement {
       this._getColorForLightEntity(this._stateObj, false),
     );
     this.style.setProperty('--button-card-ripple-color', buttonColor);
+    this.style.setProperty('--button-card-color', buttonColor);
     lockStyle = { ...lockStyle, ...lockStyleFromConfig };
+    spinnerStyle = { ...spinnerStyle, ...spinnerStyleFromConfig };
 
     const extraStyles = this._config!.extra_styles
       ? html`
@@ -1206,7 +1219,7 @@ class ButtonCard extends LitElement {
           ${this._buttonContent(this._stateObj, configState, buttonColor)}
           <ha-ripple .disabled=${!this._cardRipple}></ha-ripple>
         </ha-card>
-        ${this._getLock(lockStyle)}
+        ${this._getLock(lockStyle)} ${this._getSpinner(spinnerStyle)}
       </div>
       ${this._config?.tooltip
         ? html`
@@ -1216,6 +1229,19 @@ class ButtonCard extends LitElement {
           `
         : ''}
     `;
+  }
+
+  private _getSpinner(spinnerStyle: StyleInfo): TemplateResult {
+    if (this._spinnerActive) {
+      return html`
+        <div id="spinner" style=${styleMap(spinnerStyle)}>
+          <div id="spinner-background"></div>
+          <ha-spinner></ha-spinner>
+        </div>
+      `;
+    } else {
+      return html``;
+    }
   }
 
   private _getLock(lockStyle: StyleInfo): TemplateResult {
@@ -1623,12 +1649,12 @@ class ButtonCard extends LitElement {
     return evaluatedAction;
   }
 
-  private _evalActions(config: ButtonCardConfig, action: string): ActionEventData {
+  private _evalActions(config: ButtonCardConfig, action: ActionConfig): ActionEventData {
     let evaledActionConfig: EvaluatedActionConfig | undefined;
-    if (typeof config[action] === 'string') {
-      evaledActionConfig = this._objectEvalTemplate(this._stateObj, config[action]);
+    if (typeof action === 'string') {
+      evaledActionConfig = this._objectEvalTemplate(this._stateObj, action);
     } else {
-      evaledActionConfig = copy(config[action]);
+      evaledActionConfig = copy(action);
     }
 
     const actionType = this._getTemplateOrValue(this._stateObj, evaledActionConfig?.action);
@@ -1664,9 +1690,24 @@ class ButtonCard extends LitElement {
         } as CustomActionConfig;
         break;
 
+      case 'multi-actions':
+        evaledActionConfig = evaledActionConfig as MultiActionsActionConfig;
+        actionData[NORMALISED_ACTION] = {
+          action: 'fire-dom-event',
+          buttonCardCustomAction: {
+            callback: this._customActionsCallback.bind(this),
+            type: 'multi-actions',
+            data: {
+              multiActions: evaledActionConfig?.actions,
+            },
+          },
+        } as CustomActionConfig;
+        break;
+
       case 'toggle':
+        evaledActionConfig = evaledActionConfig as ToggleActionConfig;
         actionData.entity =
-          this._getTemplateOrValue(this._stateObj, config[action]?.entity) ||
+          this._getTemplateOrValue(this._stateObj, evaledActionConfig?.entity) ||
           this._getTemplateOrValue(this._stateObj, config.entity);
         actionData[NORMALISED_ACTION] = {
           action: 'toggle',
@@ -1674,8 +1715,9 @@ class ButtonCard extends LitElement {
         break;
 
       case 'more-info':
+        evaledActionConfig = evaledActionConfig as MoreInfoActionConfig;
         actionData.entity =
-          this._getTemplateOrValue(this._stateObj, config[action]?.entity) ||
+          this._getTemplateOrValue(this._stateObj, evaledActionConfig?.entity) ||
           this._getTemplateOrValue(this._stateObj, config.entity);
         actionData[NORMALISED_ACTION] = {
           action: 'more-info',
@@ -1811,7 +1853,7 @@ class ButtonCard extends LitElement {
     const config = this._config;
     if (!config) return;
     // always returns the action in NORMALISED_ACTION for easier handling
-    const localAction = this._evalActions(config, actionKey);
+    const localAction = this._evalActions(config, config[actionKey]);
 
     if (localAction[NORMALISED_ACTION]?.protect?.pin !== undefined) {
       (window as any).cardHelpers.showEnterCodeDialog(this, {
@@ -1853,7 +1895,7 @@ class ButtonCard extends LitElement {
     handleAction(this, this._hass!, actionData, 'tap');
   }
 
-  private _customActionsCallback(ev: ActionCustomEvent): void {
+  private async _customActionsCallback(ev: ActionCustomEvent): Promise<void> {
     if (!ev.detail || !ev.detail.buttonCardCustomAction) {
       return;
     }
@@ -1861,6 +1903,58 @@ class ButtonCard extends LitElement {
     switch (customAction.type) {
       case 'javascript':
         this._getTemplateOrValue(this._stateObj, customAction.data?.javascript);
+        break;
+      case 'multi-actions':
+        let multiActions = customAction.data?.multiActions;
+        if (typeof multiActions === 'string') {
+          multiActions = this._objectEvalTemplate(this._stateObj, multiActions) as ActionConfig[];
+        }
+        const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
+        if (Array.isArray(multiActions)) {
+          this._spinnerActive = multiActions.some((actionConfig) => {
+            return (
+              typeof actionConfig !== 'string' &&
+              ((actionConfig as CustomActionMultiActionsDelay)?.delay ||
+                (actionConfig as CustomActionMultiActionsDelay)?.wait_completion)
+            );
+          });
+          for (const actionConfig of multiActions) {
+            if (typeof actionConfig !== 'string' && (actionConfig as CustomActionMultiActionsDelay)?.delay) {
+              let delay = this._getTemplateOrValue(
+                this._stateObj,
+                (actionConfig as CustomActionMultiActionsDelay).delay,
+              );
+              delay = parseDuration(delay || '', 'ms', 'en');
+              if (delay) await timer(delay);
+            } else if (
+              typeof actionConfig !== 'string' &&
+              (actionConfig as CustomActionMultiActionsDelay)?.wait_completion
+            ) {
+              const delayActionConfig = actionConfig as CustomActionMultiActionsDelay;
+              await timer(500);
+              const timeout = this._getTemplateOrValue(this._stateObj, delayActionConfig.timeout);
+              let waitTimeout = 0;
+              const timeoutS = parseDuration(timeout || '', 'ms', 'en') || 0;
+              while (
+                (waitTimeout < timeoutS || timeoutS === 0) &&
+                !this._getTemplateOrValue(this._stateObj, delayActionConfig.wait_completion)
+              ) {
+                await timer(500);
+                waitTimeout += 500;
+              }
+            } else {
+              const actionData = this._evalActions(this._config!, actionConfig as ActionConfig);
+              delete actionData[NORMALISED_ACTION]?.repeat;
+              delete actionData[NORMALISED_ACTION]?.repeat_limit;
+              delete actionData[NORMALISED_ACTION]?.sound;
+              delete actionData[NORMALISED_ACTION]?.haptic;
+              delete actionData[NORMALISED_ACTION]?.confirmation;
+              delete actionData[NORMALISED_ACTION]?.protect;
+              this._executeAction(actionData);
+            }
+          }
+          this._spinnerActive = false;
+        }
         break;
       default:
         break;

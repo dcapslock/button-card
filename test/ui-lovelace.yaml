@@ -1637,6 +1637,61 @@ views:
               rows: 2
               columns: 4
 
+          - type: 'custom:button-card'
+            icon: mdi:console
+            name: multi-actions
+            variables:
+              delay: 3s
+            tap_action:
+              confirmation:
+                text: Do you want to run multiple-actions?
+              action: multi-actions
+              actions:
+                - action: call-service
+                  service: light.toggle
+                  service_data:
+                    entity_id: light.test_light
+                - action: javascript
+                  javascript: '[[[ this._sendToastMessage(`Waiting ${variables.delay}...`); ]]]'
+                - delay: '[[[ return variables.delay; ]]]'
+                - action: call-service
+                  service: light.toggle
+                  service_data:
+                    entity_id: light.test_light
+
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+
+          - type: 'custom:button-card'
+            icon: mdi:console
+            name: MA script completion
+            variables:
+              delay: 3s
+            tap_action:
+              action: multi-actions
+              actions:
+                - action: call-service
+                  service: light.toggle
+                  service_data:
+                    entity_id: light.test_light
+                - action: perform-action
+                  perform_action: script.turn_on
+                  target:
+                    entity_id: script.delay_script
+                - wait_completion: '[[[ return states["script.delay_script"].state === "off" ]]]'
+                  timeout: 15s
+                - action: call-service
+                  service: light.toggle
+                  service_data:
+                    entity_id: light.test_light
+
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+
       - type: grid
         cards:
           - type: 'custom:button-card'
