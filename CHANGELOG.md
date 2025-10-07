@@ -1,3 +1,14 @@
+## [5.1.0-dev.1](https://github.com/custom-cards/button-card/compare/v5.0.2...v5.1.0-dev.1) (2025-10-07)
+
+### Features
+
+* **actions:** confirmation support for javascript, PIN & Password confirmation support ([#1033](https://github.com/custom-cards/button-card/issues/1033)) ([6632114](https://github.com/custom-cards/button-card/commit/6632114e76fdef560524b1ab19b2d849450ae152)), closes [#1030](https://github.com/custom-cards/button-card/issues/1030)
+
+### Bug Fixes
+
+* **tooltip:** Set default z-index so long/wide tooltips are always visible. ([#1039](https://github.com/custom-cards/button-card/issues/1039)) ([45033df](https://github.com/custom-cards/button-card/commit/45033df2d8d011243c99de99cf2899e675f8e922)), closes [#1035](https://github.com/custom-cards/button-card/issues/1035)
+* Update --button-card-riple-hover-opacity to 0.04 to match HA button defaults ([#1037](https://github.com/custom-cards/button-card/issues/1037)) ([17917b8](https://github.com/custom-cards/button-card/commit/17917b895e087a8c420bd270b40e76fc0020c060)), closes [#1036](https://github.com/custom-cards/button-card/issues/1036)
+
 ## [5.0.2](https://github.com/custom-cards/button-card/compare/v5.0.1...v5.0.2) (2025-10-06)
 
 ### Bug Fixes
