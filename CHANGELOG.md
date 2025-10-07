@@ -1,3 +1,10 @@
+## [5.1.0-dev.2](https://github.com/custom-cards/button-card/compare/v5.1.0-dev.1...v5.1.0-dev.2) (2025-10-07)
+
+### Features
+
+* `disable_kbd` option to disable keyboard capture on the card ([#1040](https://github.com/custom-cards/button-card/issues/1040)) ([f108a52](https://github.com/custom-cards/button-card/commit/f108a52ac47bb8bf9c313769b8d14bb241ede268)), closes [#1032](https://github.com/custom-cards/button-card/issues/1032)
+* **actions:** call multiple actions in a row for any `*_action` or `icon_*_action` with the new `multi-actions` action ([#1041](https://github.com/custom-cards/button-card/issues/1041)) ([e3a50d8](https://github.com/custom-cards/button-card/commit/e3a50d8fabbcb0518fa8f83f7c345ce1447fb075))
+
 ## [5.1.0-dev.1](https://github.com/custom-cards/button-card/compare/v5.0.2...v5.1.0-dev.1) (2025-10-07)
 
 ### Features
