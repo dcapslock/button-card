@@ -3129,21 +3129,6 @@ views:
               columns: 4
           - type: "custom:button-card"
             entity: switch.skylight
-            name: Border width 5px
-            tooltip:
-              content: >
-                This is a tooltip<br/>
-                that spans multiple<br/>
-                lines
-            styles:
-              tooltip:
-                - "--ha-tooltip-border-radius": 50px
-            section_mode: true
-            grid_options:
-              rows: 2
-              columns: 4
-          - type: "custom:button-card"
-            entity: switch.skylight
             name: Arrow size 16px
             tooltip:
               content: >
