@@ -49,7 +49,7 @@ export interface ButtonCardConfig {
   variables?: Variables;
   extra_styles?: string;
   card_size: number;
-  tooltip?: string;
+  tooltip?: string | TooltipConfig;
   section_mode?: boolean;
   update_timer?: number;
   disable_kbd?: boolean;
@@ -105,7 +105,7 @@ export interface ExternalButtonCardConfig {
   variables?: Variables;
   extra_styles?: string;
   card_size?: number;
-  tooltip?: string;
+  tooltip?: string | TooltipConfig;
   section_mode?: boolean;
   grid_options?: GridOptions;
   update_timer?: number;
@@ -159,6 +159,7 @@ export interface StateConfig {
   custom_fields?: CustomFields;
   state_display?: string;
   spinner?: boolean;
+  tooltip?: string | TooltipConfig;
 }
 
 export interface StylesConfig {
@@ -350,3 +351,12 @@ export interface CustomActionMultiActionsDelay {
 }
 
 export type CustomButtonCardActionEvent = CustomActionJavascript | CustomActionMultiActions;
+
+export interface TooltipConfig {
+  content: string | undefined;
+  placement?: string;
+  delay?: string | number;
+  distance?: number;
+  skidding?: number;
+  arrow?: boolean;
+}
