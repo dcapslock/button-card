@@ -1,3 +1,13 @@
+## [5.1.0-dev.4](https://github.com/custom-cards/button-card/compare/v5.1.0-dev.3...v5.1.0-dev.4) (2025-10-16)
+
+### Features
+
+* Support templates for `hidden` to hide the card completely ([#1013](https://github.com/custom-cards/button-card/issues/1013)) ([263d366](https://github.com/custom-cards/button-card/commit/263d366e150e0876be983465e65cd3675bc12689)), closes [#1004](https://github.com/custom-cards/button-card/issues/1004)
+
+### Bug Fixes
+
+* custom_fields cards are not recreated from scratch anymore if their config is modified ([#1064](https://github.com/custom-cards/button-card/issues/1064)) ([2d8aaa4](https://github.com/custom-cards/button-card/commit/2d8aaa420028fd9aa96250915a71857263e7c185)), closes [#1060](https://github.com/custom-cards/button-card/issues/1060)
+
 ## [5.1.0-dev.3](https://github.com/custom-cards/button-card/compare/v5.1.0-dev.2...v5.1.0-dev.3) (2025-10-07)
 
 ### Features
