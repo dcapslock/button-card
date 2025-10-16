@@ -52,6 +52,7 @@ export interface ButtonCardConfig {
   tooltip?: string;
   section_mode?: boolean;
   update_timer?: number;
+  hidden?: string | boolean;
   disable_kbd?: boolean;
   spinner?: boolean;
   protect?: ButtonCardProtect;
@@ -109,6 +110,7 @@ export interface ExternalButtonCardConfig {
   section_mode?: boolean;
   grid_options?: GridOptions;
   update_timer?: number;
+  hidden?: string | boolean;
   disable_kbd?: boolean;
   spinner?: boolean;
   protect?: ButtonCardProtect;

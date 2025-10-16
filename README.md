@@ -155,6 +155,7 @@ Lovelace Button card for your entities.
 | `variables` | object | optional | See [Variables](#Variables) |
 | `card_size` | number | 3 | Any number | Configure the card size seen by the auto layout feature of lovelace (lovelace will multiply the value by about 50px) |
 | `tooltip` | string | optional | Any string | (Not supported on touchscreens) You can configure the tooltip displayed after hovering the card for 1.5 seconds . Supports templates, see [templates](#javascript-templates) |
+| `hidden` | boolean | optional | `false` | Shows or hides the card. Supports templates. |
 | `disable_kbd` | boolean | `false` | `true` or `false` | Disable keyboard `enter` and `space` capture on the button itself. Usefull when you have input fields inside the button. |
 | `spinner` | boolean | `false` | `true` or `false` | See [spinner](#spinner). If `true`, it will lock the card and display a spinner. You'll need to use a template or `state` to make this variable. |
 | `protect` | object | none | See [protect](#protect) | Display a password or PIN confirmation popup. |
@@ -597,6 +598,7 @@ Those are the configuration fields which support templating:
 - The lock being enabled or not (`lock.enabled`)
 - all the `card` parameters in a `custom_field`
 - all the `variables`
+- `hidden`: should return a boolean
 
 Special fields which do support templating but are **only evaluated once**, when the configuration is loaded. Error in those templates will only be visible in the javascript console and the card will not display in that case:
 
