@@ -504,21 +504,19 @@ class ButtonCard extends LitElement {
       }
     }
 
-    if (changedProps.has('preview') && changedProps.get('preview')) {
-      this.updateComplete.then(() => {
-        const tooltip = this.shadowRoot?.getElementById('tooltip');
-        if (tooltip) {
-          // Workaround for wa-tooltip issues with not resetting its AbortController
-          // meaning that listener are set are instantly aborted
-          // Without this workaround tooltips stop working after edit mode
-          // https://github.com/shoelace-style/webawesome/issues/1595
-          (tooltip as any).eventController?.abort();
-          (tooltip as any).eventController = new AbortController();
-          (tooltip as any).anchor = undefined;
-          (tooltip as any).handleForChange?.();
-        }
-      });
-    }
+    this.updateComplete.then(() => {
+      const tooltip = this.shadowRoot?.getElementById('tooltip');
+      if (tooltip) {
+        // Workaround for wa-tooltip issues with not resetting its AbortController
+        // meaning that listener are set are instantly aborted
+        // Without this workaround tooltips stop working after edit mode
+        // https://github.com/shoelace-style/webawesome/issues/1595
+        (tooltip as any).eventController?.abort();
+        (tooltip as any).eventController = new AbortController();
+        (tooltip as any).anchor = undefined;
+        (tooltip as any).handleForChange?.();
+      }
+    });
 
     this._updateTimer();
     this._computeHidden();
@@ -1286,7 +1284,7 @@ class ButtonCard extends LitElement {
     } else {
       tooltipStateConfig = this._objectEvalTemplate(this._stateObj, configState?.tooltip) ?? {};
     }
-    const tooltipMergedConfig = mergeDeep(tooltipConfig, tooltipStateConfig);
+    const tooltipMergedConfig = { ...tooltipConfig, ...tooltipStateConfig };
 
     if (tooltipMergedConfig && tooltipMergedConfig.content) {
       const delayMs = parseDuration(String(tooltipMergedConfig?.delay ?? '150'), 'ms', 'en');
