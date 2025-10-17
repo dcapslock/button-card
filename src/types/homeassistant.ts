@@ -286,3 +286,8 @@ export interface ResolvedMediaSource {
 export interface HaRipple extends LitElement {
   disabled: boolean;
 }
+
+export interface HaTooltip extends LitElement {
+  hide(): void;
+  hideDelay;
+}

@@ -85,7 +85,7 @@ import {
 } from './common/const';
 import { handleAction } from './handle-action';
 import { fireEvent } from './common/fire-event';
-import { HaRipple, HomeAssistant } from './types/homeassistant';
+import { HaRipple, HaTooltip, HomeAssistant } from './types/homeassistant';
 import { timerTimeRemaining } from './common/timer';
 import {
   formatDateTime,
@@ -1216,6 +1216,7 @@ class ButtonCard extends LitElement {
           id="card"
           class=${classMap(classList)}
           style=${styleMap(cardStyle)}
+          @wa-show=${this._tooltipShow}
           @action=${(ev: CustomEvent) => this._handleAction(ev, { isIcon: false })}
           .actionHandler=${actionHandler({
             hasDoubleClick: this._isActionDoingSomething(this._stateObj, this._config!.double_tap_action),
@@ -1258,6 +1259,7 @@ class ButtonCard extends LitElement {
         <ha-tooltip
           id="tooltip"
           for="card"
+          @wa-show=${this._tooltipShow}
           placement=${ifDefined(tooltipMergedConfig.placement || undefined)}
           distance=${ifDefined(tooltipMergedConfig.distance || undefined)}
           skidding=${ifDefined(tooltipMergedConfig.skidding || undefined)}
@@ -2111,5 +2113,30 @@ class ButtonCard extends LitElement {
         r.parentElement?.dispatchEvent(rippleEvent);
       }
     });
+  }
+
+  private _tooltipShow(ev): void {
+    ev.stopPropagation();
+    if (ev.detail?.card && ev.detail.card !== this) {
+      // child tooltip is showing. hide ours using tooltip hideDelay
+      // child tooltip will hide per normal after hideDelay making show/hide parent/chid tooltips have same delay
+      const tooltip: HaTooltip | null | undefined = this.shadowRoot?.querySelector('#tooltip');
+      if (tooltip) {
+        const hideDelay = tooltip.hideDelay ?? 400;
+        window.setTimeout(() => {
+          tooltip.hide?.();
+        }, hideDelay);
+      }
+    } else {
+      const event = new CustomEvent(ev.type, {
+        ...ev,
+        bubbles: true,
+        composed: true,
+        detail: {
+          card: this,
+        },
+      });
+      this.parentElement?.dispatchEvent(event);
+    }
   }
 }
