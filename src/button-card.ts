@@ -142,6 +142,13 @@ console.info(
   description: 'A massively customizable custom button card',
 });
 
+declare global {
+  // eslint-disable-next-line
+  interface HASSDomEvents {
+    'card-visibility-changed': null;
+  }
+}
+
 @customElement('button-card')
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 class ButtonCard extends LitElement {
@@ -185,6 +192,8 @@ class ButtonCard extends LitElement {
 
   private _hasIconActions = false;
 
+  private _hidden = false;
+
   private _cardMomentary = false;
 
   private _iconMomentary = false;
@@ -214,6 +223,20 @@ class ButtonCard extends LitElement {
       entity: foundEntities[0] || '',
       section_mode: false,
     };
+  }
+
+  private _computeHidden(): void {
+    let hidden: boolean;
+    if (this.preview || !this._initialSetupComplete || this._config?.hidden === undefined) {
+      hidden = false;
+    } else {
+      hidden = this._getTemplateOrValue(this._stateObj, this._config!.hidden);
+    }
+    if (hidden !== this._hidden) {
+      this._hidden = hidden;
+      this.hidden = hidden;
+      fireEvent(this, 'card-visibility-changed');
+    }
   }
 
   public set hass(hass: HomeAssistant) {
@@ -369,6 +392,7 @@ class ButtonCard extends LitElement {
 
       this._startTimerCountdown();
       this._updateTimerStart();
+      this._computeHidden();
       this._initialSetupComplete = true;
     }
   }
@@ -425,6 +449,9 @@ class ButtonCard extends LitElement {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has('_config')) {
+      return true;
+    }
     if (this._config?.triggers_update === 'update_timer') {
       if (changedProps.has('_updateTimerMS')) {
         return true;
@@ -494,6 +521,7 @@ class ButtonCard extends LitElement {
     }
 
     this._updateTimer();
+    this._computeHidden();
   }
 
   private _clearInterval(): void {
@@ -1033,10 +1061,18 @@ class ButtonCard extends LitElement {
         };
         let thing;
         if (!deepEqual(this._cardsConfig[key], cards[key])) {
-          thing = this._createCard(cards[key]);
-          thing.preview = this.preview;
-          this._cards[key] = thing;
-          this._cardsConfig[key] = copy(cards[key]);
+          if ((this._cardsConfig[key] as any)?.type === cards[key]?.type) {
+            // same type, different config
+            thing = this._cards[key];
+            thing.preview = this.preview;
+            this._cardsConfig[key] = copy(cards[key]);
+            thing.setConfig(cards[key]);
+          } else {
+            thing = this._createCard(cards[key]);
+            thing.preview = this.preview;
+            this._cards[key] = thing;
+            this._cardsConfig[key] = copy(cards[key]);
+          }
         } else {
           thing = this._cards[key];
         }
