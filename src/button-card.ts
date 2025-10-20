@@ -1213,10 +1213,12 @@ class ButtonCard extends LitElement {
         cardStyle['background-color'] = color;
         cardStyle = { ...cardStyle, ...configCardStyle };
         buttonColor = 'inherit';
+        this.style.setProperty('--button-card-color', fontColor);
         break;
       }
       default:
         cardStyle = configCardStyle;
+        this.style.setProperty('--button-card-color', buttonColor);
         break;
     }
     if (this._config!.aspect_ratio) {
@@ -1231,7 +1233,6 @@ class ButtonCard extends LitElement {
       this._getColorForLightEntity(this._stateObj, false),
     );
     this.style.setProperty('--button-card-ripple-color', buttonColor);
-    this.style.setProperty('--button-card-color', buttonColor);
     lockStyle = { ...lockStyle, ...lockStyleFromConfig };
     spinnerStyle = { ...spinnerStyle, ...spinnerStyleFromConfig };
 
