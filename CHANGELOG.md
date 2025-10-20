@@ -1,3 +1,21 @@
+## [6.0.0-dev.1](https://github.com/custom-cards/button-card/compare/v5.1.0-dev.4...v6.0.0-dev.1) (2025-10-20)
+
+### ⚠ BREAKING CHANGES
+
+* **tooltips:** Tooltips have been migrated to use Home Assistant
+tooltips (ha-tooltip) and will now show in the standard Home Assistant
+style. There must be a button action for toolips to show as they fire
+off pointer events. Review documentation for impact and updated styling
+options. Requires Home Assistant 2025.10 and greater.
+
+### Features
+
+* **tooltips:** Migrate tooltips to ha-tooltip ([#1063](https://github.com/custom-cards/button-card/issues/1063)) ([561003e](https://github.com/custom-cards/button-card/commit/561003eac2655a48911c1fac2b4b2b194c498a2d)), closes [#1062](https://github.com/custom-cards/button-card/issues/1062)
+
+### Bug Fixes
+
+* improve spinner's default color for `color_type: card` ([#1065](https://github.com/custom-cards/button-card/issues/1065)) ([6db839d](https://github.com/custom-cards/button-card/commit/6db839d63607ba7c0ea1ab5260b6ba0bf4b644c4)), closes [#1058](https://github.com/custom-cards/button-card/issues/1058)
+
 ## [5.1.0-dev.4](https://github.com/custom-cards/button-card/compare/v5.1.0-dev.3...v5.1.0-dev.4) (2025-10-16)
 
 ### Features
