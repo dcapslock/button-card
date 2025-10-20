@@ -37,6 +37,10 @@ Lovelace Button card for your entities.
   - [Sections views](#sections-views)
   - [Layout](#layout)
   - [`triggers_update`](#triggers_update)
+  - [Tooltips](#tooltips)
+    - [Basic tooltip](#basic-tooltip)
+    - [Tooltip](#tooltip)
+    - [Tooltip styles](#tooltip-styles)
   - [Javascript Templates](#javascript-templates)
   - [Styles](#styles)
     - [Easy styling options](#easy-styling-options)
@@ -154,7 +158,7 @@ Lovelace Button card for your entities.
 | `custom_fields` | object | optional | See [Custom Fields](#Custom-Fields) |
 | `variables` | object | optional | See [Variables](#Variables) |
 | `card_size` | number | 3 | Any number | Configure the card size seen by the auto layout feature of lovelace (lovelace will multiply the value by about 50px) |
-| `tooltip` | string | optional | Any string | (Not supported on touchscreens) You can configure the tooltip displayed after hovering the card for 1.5 seconds . Supports templates, see [templates](#javascript-templates) |
+| `tooltip` | string or object | optional | See [Tooltips](#tooltips) | Display a tooltip. (Not supported on touchscreens). Supports templates, see [templates](#javascript-templates) |
 | `hidden` | boolean | optional | `false` | Shows or hides the card. Supports templates. |
 | `disable_kbd` | boolean | `false` | `true` or `false` | Disable keyboard `enter` and `space` capture on the button itself. Usefull when you have input fields inside the button. |
 | `spinner` | boolean | `false` | `true` or `false` | See [spinner](#spinner). If `true`, it will lock the card and display a spinner. You'll need to use a template or `state` to make this variable. |
@@ -559,6 +563,95 @@ If your entity, any entity in the `triggers_update` field or any entity matched 
 
 If no entity is suitable for `triggers_update` you may consider to use `update_timer`.
 
+### Tooltips
+
+This option enables you to define a tooltip for the card. Tooltips are not supported on touch devices. The tooltip will display after a delay when the card is in focus and hide after a delay when the card loses focus, or a button card in a custom field shows a tooltip.
+
+#### Basic tooltip
+
+| Name | Type | Default | Supported options | Description |
+| --- | --- | --- | --- | --- |
+| `tooltip` | string | none | A string or an `` html`<elt></elt>` `` object | A simple form of tooltip which allows for string/HTML but with no further control, allowing for backward compatability with configuration prior to 5.1.0 |
+
+```yaml
+type: custom:button-card
+entity: light.bed_light
+tooltip: Tap to toggle
+```
+
+Example using state
+
+```yaml
+type: custom:button-card
+entity: light.bed_light
+state:
+  - value: 'on'
+    tooltip: Tap to turn OFF
+  - value: 'off'
+    tooltip: Tap to turn ON
+```
+
+#### Tooltip
+
+All parameters support [templates](#javascript-templates).
+
+| Name | Type | Default | Supported options | Description |
+| --- | --- | --- | --- | --- |
+| `content` | string | none | A string or an `` html`<elt></elt>` `` object | Tooltip content. |
+| `placement` | string | `top` | `top`, `top-start`, `top-end`, `right`, `right-start`, `right-end`, `bottom`, `bottom-start`, `bottom-end`, `left`, `left-start`, `left-end` | The anchor point of the tooltip im relation to the card. The tooltip shows outside the card at this location. If needed the tooltip will flip to the alternate side. See [placement](https://webawesome.com/docs/components/tooltip/#placement) for examples. |
+| `delay` | number or string | 150ms | number (ms), string duration in english supported by `helpers.parseDuration` | Delay after which the tooltip will display when the card is in focus. |
+| `distance` | number | 8 | number (pixels) | The distance in pixels by which the tooltip is offset away from the card. |
+| `skidding` | number | optinal | number (pixels) | The distance in pixels by which the tooltip is offset along teh card |
+| `arrow` | boolean | false | true \| false | Whether to show an arrow connecting the button to the tooltip. |
+
+```yaml
+type: custom:button-card
+entity: light.bed_light
+tooltip:
+  content: Tap to toggle
+  placement: bottom-start
+  delay: 1s
+  distance: 20
+  skidding: 50
+  arrow: true
+```
+
+Example using state
+
+```yaml
+type: custom:button-card
+entity: light.bed_light
+tooltip:
+  placement: bottom-start
+  delay: 1s
+  distance: 20
+  skidding: 50
+  arrow: true
+state:
+  - value: 'on'
+    tooltip:
+      content: Tap to turn OFF
+  - value: 'off'
+    tooltip:
+      content: Tap to turn ON
+```
+
+#### Tooltip styles
+
+The following style variables are available for tooltips. See [Styles](#styles) for how to apply style in main config or state.
+
+| CSS Variable | Default | Description |
+| --- | --- | --- |
+| --primary-text-color | Home Assistant default | Tooltip text color |
+| --secondary-background-color | Home Assistant default | Tooltip background color |
+| --ha-tooltip-font-family | var(--ha-font-family-body) | Tooltip font family |
+| --ha-tooltip-font-size | var(--ha-font-size-s) | Tooltip font size |
+| --ha-tooltip-font-weight | var(--ha-font-weight-normal) | Tooltip font weight |
+| --ha-tooltip-line-height | var(--ha-line-height-condensed) | Tooltip line height |
+| --ha-tooltip-border-radius | 4px | Tooltip border radius |
+| --ha-tooltip-arrow-size | 8px | Tooltip arrow size, if displayed |
+| --max-width | 30ch | Tooltip maximum width. Set to `none` to not limit the tooltip width |
+
 ### Javascript Templates
 
 The template rendering uses a special format. All the fields where template is supported also support plain text. To activate the templating feature for such a field, you'll need to enclose the javascript function inside 3 square brackets: `[[[ javascript function here ]]]`
@@ -583,7 +676,7 @@ Those are the configuration fields which support templating:
 - `name` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` `` object
 - `state_display` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` `` object
 - `label` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` `` object
-- `tooltip` (Supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` ``
+- All the `tooltip` parameters. (Tooltip `content` supports also HTML rendering): This needs to return a string or an `` html`<elt></elt>` ``
 - `entity_picture`: This needs to return a path to a file or a url as a string.
 - `icon`: This needs to return a string in the format `mdi:icon`
 - All the styles in the style object: This needs to return a string
@@ -689,7 +782,7 @@ The `style` object members are:
 - `state`: styles for the state
 - `label`: styles for the label
 - `lock`: styles for the lock icon (see [here](https://github.com/custom-cards/button-card/blob/master/src/styles.ts#L73-L86) for the default style)
-- `tooltip`: styles for the tooltip overlay (see [here](https://github.com/custom-cards/button-card/blob/master/src/styles.ts#L30-L46))
+- `tooltip`: styles for the tooltip (see [Tooltip styles](#tooltip-styles))
 - `spinner`: styles for the spinner overlay
 - `custom_fields`: styles for each of your custom fields. See [Custom Fields](#custom-fields)
 

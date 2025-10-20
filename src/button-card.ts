@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { LitElement, html, TemplateResult, CSSResult, PropertyValues } from 'lit';
+import { LitElement, html, TemplateResult, CSSResult, PropertyValues, nothing } from 'lit';
 import { customElement, property, queryAsync } from 'lit/decorators';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { until } from 'lit/directives/until.js';
@@ -37,6 +37,7 @@ import {
   CallServiceActionConfig,
   MultiActionsActionConfig,
   CustomActionMultiActionsDelay,
+  TooltipConfig,
 } from './types/types';
 import { actionHandler } from './action-handler';
 import {
@@ -84,7 +85,7 @@ import {
 } from './common/const';
 import { handleAction } from './handle-action';
 import { fireEvent } from './common/fire-event';
-import { HaRipple, HomeAssistant } from './types/homeassistant';
+import { HaRipple, HaTooltip, HomeAssistant } from './types/homeassistant';
 import { timerTimeRemaining } from './common/timer';
 import {
   formatDateTime,
@@ -502,6 +503,20 @@ class ButtonCard extends LitElement {
         this._clearInterval();
       }
     }
+
+    this.updateComplete.then(() => {
+      const tooltip = this.shadowRoot?.getElementById('tooltip');
+      if (tooltip) {
+        // Workaround for wa-tooltip issues with not resetting its AbortController
+        // meaning that listener are set are instantly aborted
+        // Without this workaround tooltips stop working after edit mode
+        // https://github.com/shoelace-style/webawesome/issues/1595
+        (tooltip as any).eventController?.abort();
+        (tooltip as any).eventController = new AbortController();
+        (tooltip as any).anchor = undefined;
+        (tooltip as any).handleForChange?.();
+      }
+    });
 
     this._updateTimer();
     this._computeHidden();
@@ -1151,9 +1166,6 @@ class ButtonCard extends LitElement {
     const configState = this._getMatchingConfigState(this._stateObj);
     this._computeIsClickable(this._stateObj, configState);
     let color: string = DEFAULT_STATE_COLOR;
-    const tooltipValue: string | undefined = this._config!.tooltip
-      ? this._getTemplateOrValue(this._stateObj, this._config!.tooltip)
-      : undefined;
     if (!!configState?.color && !AUTO_COLORS.includes(configState.color)) {
       color = configState.color;
     } else if (!!this._config?.color && !AUTO_COLORS.includes(this._config.color)) {
@@ -1185,9 +1197,6 @@ class ButtonCard extends LitElement {
     };
     if (!!this._config?.section_mode) {
       this.classList.add('section');
-    }
-    if (this._config?.tooltip) {
-      this.classList.add('tooltip');
     }
     if (configCardStyle.width) {
       this.style.setProperty('flex', '0 0 auto');
@@ -1241,6 +1250,7 @@ class ButtonCard extends LitElement {
           id="card"
           class=${classMap(classList)}
           style=${styleMap(cardStyle)}
+          @wa-show=${this._tooltipShow}
           @action=${(ev: CustomEvent) => this._handleAction(ev, { isIcon: false })}
           .actionHandler=${actionHandler({
             hasDoubleClick: this._isActionDoingSomething(this._stateObj, this._config!.double_tap_action),
@@ -1256,15 +1266,47 @@ class ButtonCard extends LitElement {
           <ha-ripple .disabled=${!this._cardRipple}></ha-ripple>
         </ha-card>
         ${this._getLock(lockStyle)} ${this._getSpinner(spinnerStyle, configState)}
+        ${this._getTooltip(tooltipStyleFromConfig, configState)}
       </div>
-      ${this._config?.tooltip
-        ? html`
-            <span class="tooltiptext" style=${styleMap(tooltipStyleFromConfig)}>
-              ${this._unsafeHTMLorNot(tooltipValue)}
-            </span>
-          `
-        : ''}
     `;
+  }
+
+  private _getTooltip(tooltipStyle: StyleInfo, configState: StateConfig | undefined): TemplateResult {
+    let tooltipConfig: TooltipConfig | undefined;
+    if (typeof this._config!.tooltip === 'string') {
+      tooltipConfig = { content: this._getTemplateOrValue(this._stateObj, this._config!.tooltip) };
+    } else {
+      tooltipConfig = this._objectEvalTemplate(this._stateObj, this._config!.tooltip) ?? {};
+    }
+    let tooltipStateConfig: TooltipConfig | undefined;
+    if (typeof configState?.tooltip === 'string') {
+      tooltipStateConfig = { content: this._getTemplateOrValue(this._stateObj, configState?.tooltip) };
+    } else {
+      tooltipStateConfig = this._objectEvalTemplate(this._stateObj, configState?.tooltip) ?? {};
+    }
+    const tooltipMergedConfig = { ...tooltipConfig, ...tooltipStateConfig };
+
+    if (tooltipMergedConfig && tooltipMergedConfig.content) {
+      const delayMs = parseDuration(String(tooltipMergedConfig?.delay ?? '150'), 'ms', 'en');
+      const withoutArrow = tooltipMergedConfig?.arrow ? undefined : true;
+      return html`
+        <ha-tooltip
+          id="tooltip"
+          for="card"
+          @wa-show=${this._tooltipShow}
+          placement=${ifDefined(tooltipMergedConfig.placement || undefined)}
+          distance=${ifDefined(tooltipMergedConfig.distance || undefined)}
+          skidding=${ifDefined(tooltipMergedConfig.skidding || undefined)}
+          show-delay=${ifDefined(delayMs || undefined)}
+          without-arrow=${withoutArrow || nothing}
+          style=${styleMap(tooltipStyle)}
+        >
+          <span class="tooltip">${this._unsafeHTMLorNot(tooltipMergedConfig.content)}</span>
+        </ha-tooltip>
+      `;
+    } else {
+      return html``;
+    }
   }
 
   private _getSpinner(spinnerStyle: StyleInfo, configState: StateConfig | undefined): TemplateResult {
@@ -2105,5 +2147,30 @@ class ButtonCard extends LitElement {
         r.parentElement?.dispatchEvent(rippleEvent);
       }
     });
+  }
+
+  private _tooltipShow(ev): void {
+    ev.stopPropagation();
+    if (ev.detail?.card && ev.detail.card !== this) {
+      // child tooltip is showing. hide ours using tooltip hideDelay
+      // child tooltip will hide per normal after hideDelay making show/hide parent/chid tooltips have same delay
+      const tooltip: HaTooltip | null | undefined = this.shadowRoot?.querySelector('#tooltip');
+      if (tooltip) {
+        const hideDelay = tooltip.hideDelay ?? 400;
+        window.setTimeout(() => {
+          tooltip.hide?.();
+        }, hideDelay);
+      }
+    } else {
+      const event = new CustomEvent(ev.type, {
+        ...ev,
+        bubbles: true,
+        composed: true,
+        detail: {
+          card: this,
+        },
+      });
+      this.parentElement?.dispatchEvent(event);
+    }
   }
 }

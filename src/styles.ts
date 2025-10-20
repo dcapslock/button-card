@@ -59,30 +59,12 @@ export const styles = css`
       calc(var(--ha-ripple-pressed-opacity, 0.12) + 0.05)
     );
   }
-  :host(.tooltip) .tooltiptext {
-    pointer-events: none;
-    opacity: 0;
+  ha-tooltip {
     text-align: center;
-    padding: 4px;
-    border-radius: var(--ha-card-border-radius, 4px);
-    box-shadow: var(
-      --ha-card-box-shadow,
-      0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-      0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-      0px 1px 3px 0px rgba(0, 0, 0, 0.12)
-    );
-    background: var(--ha-card-background, var(--card-background-color, white));
-    border: 1px solid var(--primary-text-color);
-    color: var(--primary-text-color);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: var(--ha-tooltip-z-index, 1000);
   }
-  :host(.tooltip:hover) span.tooltiptext {
-    opacity: 1;
-    transition-delay: 1.5s;
+  :host span.tooltip {
+    font-weight: var(--ha-tooltip-font-weight, normal);
+    font-family: var(--ha-tooltip-font-family, inherit);
   }
   :not(ha-state-icon) ha-icon,
   ha-state-icon {
@@ -107,7 +89,6 @@ export const styles = css`
     white-space: nowrap;
     overflow: hidden;
   }
-
   #spinner {
     align-items: flex-start;
     justify-content: flex-start;
