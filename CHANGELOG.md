@@ -1,3 +1,10 @@
+## [6.0.0-dev.2](https://github.com/custom-cards/button-card/compare/v6.0.0-dev.1...v6.0.0-dev.2) (2025-10-22)
+
+### Features
+
+* **action:** new `toast` custom action and new `helpers.toastMessage` and `helpers.toast` helpers functions ([#1070](https://github.com/custom-cards/button-card/issues/1070)) ([ecf1b5c](https://github.com/custom-cards/button-card/commit/ecf1b5c97fb7b7fb648bd9ec57578dcca4d5b062))
+* **tooltips:** replace ha-tooltip with wa-tooltip and expose more styling ([#1072](https://github.com/custom-cards/button-card/issues/1072)) ([c97f4dd](https://github.com/custom-cards/button-card/commit/c97f4dd1c0d10dfe38209100ac6d71ca3b0371c5)), closes [#1071](https://github.com/custom-cards/button-card/issues/1071)
+
 ## [6.0.0-dev.1](https://github.com/custom-cards/button-card/compare/v5.1.0-dev.4...v6.0.0-dev.1) (2025-10-20)
 
 ### ⚠ BREAKING CHANGES
