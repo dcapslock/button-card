@@ -134,7 +134,7 @@ extra:
     provider: mike
     default: stable
     alias: true
-    alias_type: copy
+    alias_type: symlink
   generator: false
   social:
     - icon: fontawesome/brands/github
