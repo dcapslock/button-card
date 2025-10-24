@@ -168,7 +168,7 @@ Defining a PIN for all actions but one:
 ```yaml
 type: custom:button-card
 entity: light.aquarium
-protect: # globally enables the PIN for all actions
+protect: # (1)!
   pin: '1234'
   success_message: 'PIN is correct!'
   failure_message: 'PIN is wrong!'
@@ -183,8 +183,11 @@ icon_tap_action:
   action: more-info
   entity: sensor.aquarium_temperature
   protect:
-    pin: '' # Setting this to an empty string disables the pin for this action only.
+    pin: '' # (2)!
 ```
+
+1. Globally enables the PIN for all actions.
+2. Setting this to an empty string disables the pin for this action only.
 
 ## Multi-actions
 
@@ -266,8 +269,8 @@ tap_action:
 
 All options support templating.
 
-| Name | JS |  | Type | Default | Supported options | Description |
-| --- | :-: | --- | --- | --- | --- | --- |
+| Name | JS | Type | Default | Supported options | Description |
+| --- | :-: | --- | --- | --- | --- |
 | `message` | [:white_check_mark:](../advanced/js-templates.md) | string | Optional | any string | The toast message to display |
 | `duration` | [:white_check_mark:](../advanced/js-templates.md) | number | Optional | any number | The message will be displayed for `duration` ms |
 | `dismissable` | [:white_check_mark:](../advanced/js-templates.md) | boolean | Optional | `true` or `false` | If the toast message is dismissable |
