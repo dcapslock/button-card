@@ -1,3 +1,37 @@
+## [6.0.0](https://github.com/custom-cards/button-card/compare/v5.0.2...v6.0.0) (2025-10-24)
+
+### ⚠ BREAKING CHANGES
+
+* **tooltips:** Tooltips have been migrated to use Home Assistant
+tooltips (ha-tooltip) and will now show in the standard Home Assistant
+style. There must be a button action for toolips to show as they fire
+off pointer events. Review documentation for impact and updated styling
+options. Requires Home Assistant 2025.10 and greater.
+
+### Features
+
+* `disable_kbd` option to disable keyboard capture on the card ([#1040](https://github.com/custom-cards/button-card/issues/1040)) ([f108a52](https://github.com/custom-cards/button-card/commit/f108a52ac47bb8bf9c313769b8d14bb241ede268)), closes [#1032](https://github.com/custom-cards/button-card/issues/1032)
+* **action:** new `toast` custom action and new `helpers.toastMessage` and `helpers.toast` helpers functions ([#1070](https://github.com/custom-cards/button-card/issues/1070)) ([ecf1b5c](https://github.com/custom-cards/button-card/commit/ecf1b5c97fb7b7fb648bd9ec57578dcca4d5b062))
+* **actions:** call multiple actions in a row for any `*_action` or `icon_*_action` with the new `multi-actions` action ([#1041](https://github.com/custom-cards/button-card/issues/1041)) ([e3a50d8](https://github.com/custom-cards/button-card/commit/e3a50d8fabbcb0518fa8f83f7c345ce1447fb075))
+* **actions:** confirmation support for javascript, PIN & Password confirmation support ([#1033](https://github.com/custom-cards/button-card/issues/1033)) ([6632114](https://github.com/custom-cards/button-card/commit/6632114e76fdef560524b1ab19b2d849450ae152)), closes [#1030](https://github.com/custom-cards/button-card/issues/1030)
+* **protect:** allow configuring `protect` at the card level ([#1049](https://github.com/custom-cards/button-card/issues/1049)) ([1680330](https://github.com/custom-cards/button-card/commit/16803303a82b135ccbe58e17fce6d8826b5840f3)), closes [#1044](https://github.com/custom-cards/button-card/issues/1044)
+* **protect:** Support for `success_message` ([#1048](https://github.com/custom-cards/button-card/issues/1048)) ([78c7151](https://github.com/custom-cards/button-card/commit/78c71513c15d2c101a4e58acec62b6dedf668405)), closes [#1046](https://github.com/custom-cards/button-card/issues/1046)
+* **spinner:** Display a configurable spinning wheel (eg. while a script is running) ([#1047](https://github.com/custom-cards/button-card/issues/1047)) ([fb1963e](https://github.com/custom-cards/button-card/commit/fb1963ec057a5f11a4a16d15519c9a32fc1e665c))
+* Support templates for `hidden` to hide the card completely ([#1013](https://github.com/custom-cards/button-card/issues/1013)) ([263d366](https://github.com/custom-cards/button-card/commit/263d366e150e0876be983465e65cd3675bc12689)), closes [#1004](https://github.com/custom-cards/button-card/issues/1004)
+* **tooltips:** Migrate tooltips to ha-tooltip ([#1063](https://github.com/custom-cards/button-card/issues/1063)) ([561003e](https://github.com/custom-cards/button-card/commit/561003eac2655a48911c1fac2b4b2b194c498a2d)), closes [#1062](https://github.com/custom-cards/button-card/issues/1062)
+* **tooltips:** replace ha-tooltip with wa-tooltip and expose more styling ([#1072](https://github.com/custom-cards/button-card/issues/1072)) ([c97f4dd](https://github.com/custom-cards/button-card/commit/c97f4dd1c0d10dfe38209100ac6d71ca3b0371c5)), closes [#1071](https://github.com/custom-cards/button-card/issues/1071)
+
+### Bug Fixes
+
+* custom_fields cards are not recreated from scratch anymore if their config is modified ([#1064](https://github.com/custom-cards/button-card/issues/1064)) ([2d8aaa4](https://github.com/custom-cards/button-card/commit/2d8aaa420028fd9aa96250915a71857263e7c185)), closes [#1060](https://github.com/custom-cards/button-card/issues/1060)
+* improve spinner's default color for `color_type: card` ([#1065](https://github.com/custom-cards/button-card/issues/1065)) ([6db839d](https://github.com/custom-cards/button-card/commit/6db839d63607ba7c0ea1ab5260b6ba0bf4b644c4)), closes [#1058](https://github.com/custom-cards/button-card/issues/1058)
+* **tooltip:** Set default z-index so long/wide tooltips are always visible. ([#1039](https://github.com/custom-cards/button-card/issues/1039)) ([45033df](https://github.com/custom-cards/button-card/commit/45033df2d8d011243c99de99cf2899e675f8e922)), closes [#1035](https://github.com/custom-cards/button-card/issues/1035)
+* Update --button-card-riple-hover-opacity to 0.04 to match HA button defaults ([#1037](https://github.com/custom-cards/button-card/issues/1037)) ([17917b8](https://github.com/custom-cards/button-card/commit/17917b895e087a8c420bd270b40e76fc0020c060)), closes [#1036](https://github.com/custom-cards/button-card/issues/1036)
+
+### Documentation
+
+* New documentation website replacing the current README ([#1073](https://github.com/custom-cards/button-card/issues/1073)) ([2de1890](https://github.com/custom-cards/button-card/commit/2de1890550d73878157e7ba0a0a8ba07696ab80d))
+
 ## [6.0.0-dev.2](https://github.com/custom-cards/button-card/compare/v6.0.0-dev.1...v6.0.0-dev.2) (2025-10-22)
 
 ### Features
