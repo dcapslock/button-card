@@ -64,7 +64,7 @@ jobs:
           git pull
           echo "Getting version from package.json"
           cat package.json | jq -r .version
-          echo Publishing documentation (only major.minor)
+          echo "Publishing documentation (only major.minor)"
           VERSION=$(cat package.json | jq -r .version | cut -d '.' -f 1,2)
           cd docs
           mike deploy -u -p --allow-empty "v${VERSION}" stable
