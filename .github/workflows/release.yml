@@ -46,7 +46,12 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
           cache-dependency-path: docs/requirements.txt
-      - run: pip install -r docs/requirements.txt
+      - name: Install python dependencies
+        run: pip install -r docs/requirements.txt
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
       - name: Build and publish dev documentation
         if: github.ref == 'refs/heads/dev'
         run: |
