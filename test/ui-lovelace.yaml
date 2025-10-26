@@ -2894,7 +2894,7 @@ views:
             entity: switch.skylight
             name: Multiline
             tooltip:
-              content: >
+              content: |
                 This is a tooltip<br/> that spans multiple<br/> lines
             section_mode: true
             grid_options:
@@ -3191,7 +3191,7 @@ views:
             entity: switch.skylight
             name: Text align right
             tooltip:
-              content: >
+              content: |
                 This is a tooltip<br/> that spans multiple<br/> lines
             styles:
               tooltip:
@@ -3204,7 +3204,7 @@ views:
             entity: switch.skylight
             name: Padding 1em 2em
             tooltip:
-              content: >
+              content: |
                 This is a tooltip<br/> that spans multiple<br/> lines
             styles:
               tooltip:
@@ -3217,7 +3217,7 @@ views:
             entity: switch.skylight
             name: Border red 2px dashed
             tooltip:
-              content: >
+              content: |
                 This is a tooltip<br/> that spans multiple<br/> lines
             styles:
               tooltip:
@@ -3232,7 +3232,7 @@ views:
             entity: switch.skylight
             name: Border radius 50
             tooltip:
-              content: >
+              content: |
                 This is a tooltip<br/> that spans multiple<br/> lines
             styles:
               tooltip:
@@ -3245,7 +3245,7 @@ views:
             entity: switch.skylight
             name: Arrow size 16px
             tooltip:
-              content: >
+              content: |
                 This is a tooltip<br/> that spans multiple<br/> lines
               arrow: true
             styles:
@@ -3259,7 +3259,7 @@ views:
             entity: switch.skylight
             name: Max width 50px
             tooltip:
-              content: >
+              content: |
                 This is a tooltip<br/> that spans multiple<br/> lines
               arrow: true
             styles:
@@ -3273,7 +3273,7 @@ views:
             entity: switch.skylight
             name: Max width none
             tooltip:
-              content: >
+              content: |
                 This is a tooltip a very very very long text that should not wrap but extend to full width
               arrow: true
             styles:
@@ -3286,8 +3286,8 @@ views:
           - type: 'custom:button-card'
             entity: switch.skylight
             name: overflow-wrap
-            tooltip: >
-                This is a tooltip<br/> that spans multiple<br/> lines with the last line needing a break 123456789123456789
+            tooltip: |
+              This is a tooltip<br/> that spans multiple<br/> lines with the last line needing a break 123456789123456789
             styles:
               tooltip:
                 - '--button-card-tooltip-max-width': 100px
@@ -3302,7 +3302,7 @@ views:
             tooltip:
               placement: right-start
               distance: -50
-              content: >
+              content: |
                 This is a tooltip<br/> that spans multiple<br/> lines
             styles:
               tooltip:
@@ -3318,8 +3318,8 @@ views:
           - type: 'custom:button-card'
             entity: switch.skylight
             name: Box shadow
-            tooltip: >
-                This is a tooltip<br/> that spans multiple<br/> lines
+            tooltip: |
+              This is a tooltip<br/> that spans multiple<br/> lines
             styles:
               tooltip:
                 - '--button-card-tooltip-box-shadow': 10px 5px 5px red
@@ -3331,8 +3331,8 @@ views:
             entity: switch.skylight
             name: Direct styling
             tooltip:
-                content: This is a tooltip<br/> that spans multiple<br/> lines
-                arrow: true
+              content: This is a tooltip<br/> that spans multiple<br/> lines
+              arrow: true
             section_mode: true
             grid_options:
               rows: 2
