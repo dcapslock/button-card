@@ -1,3 +1,15 @@
+## [6.1.0-dev.1](https://github.com/custom-cards/button-card/compare/v6.0.0...v6.1.0-dev.1) (2025-10-26)
+
+### Features
+
+* new `helpers.runAction` to run any action supported by button-card ([#1075](https://github.com/custom-cards/button-card/issues/1075)) ([295afcc](https://github.com/custom-cards/button-card/commit/295afccafcf932cb1f93d4301e7ea9d432e4ded3))
+* **ripple:** `show_ripple` to disable or enable the ripple/hover effect (undefined = auto) ([#1076](https://github.com/custom-cards/button-card/issues/1076)) ([1964f4b](https://github.com/custom-cards/button-card/commit/1964f4bedd577035809489b8bf649a0c8299ffd3))
+
+### Documentation
+
+* Fix toast action table formating ([af8c932](https://github.com/custom-cards/button-card/commit/af8c9322fd54515c0ee9fff919f8a972817f7b30))
+* Remove uneeded `-` from code examples ([b202a09](https://github.com/custom-cards/button-card/commit/b202a09b62d702a86fd38f7bcccb01d6853bb174))
+
 ## [6.0.0](https://github.com/custom-cards/button-card/compare/v5.0.2...v6.0.0) (2025-10-24)
 
 ### ⚠ BREAKING CHANGES
