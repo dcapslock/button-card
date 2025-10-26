@@ -1,3 +1,13 @@
+## [6.1.0-dev.2](https://github.com/custom-cards/button-card/compare/v6.1.0-dev.1...v6.1.0-dev.2) (2025-10-26)
+
+### Features
+
+* `triggers_update` is not required anymore, all entities used in JS templates are now discovered automatically. ([#1080](https://github.com/custom-cards/button-card/issues/1080)) ([ccb5766](https://github.com/custom-cards/button-card/commit/ccb57664184f1312128af970a83227ee9c723b25)), closes [#1074](https://github.com/custom-cards/button-card/issues/1074)
+
+### Documentation
+
+* Fix action config table format ([f65b2a6](https://github.com/custom-cards/button-card/commit/f65b2a63621d1846e5cdc82d8f9d839091c5734a))
+
 ## [6.1.0-dev.1](https://github.com/custom-cards/button-card/compare/v6.0.0...v6.1.0-dev.1) (2025-10-26)
 
 ### Features
