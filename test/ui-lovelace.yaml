@@ -1788,6 +1788,46 @@ views:
               rows: 2
               columns: 4
 
+          - type: 'custom:button-card'
+            icon: mdi:console
+            name: helpers.runAction
+            tap_action:
+              action: javascript
+              javascript: |
+                [[[
+                  const action = {
+                    action: "toggle",
+                    entity: "switch.skylight",
+                    protect: {
+                      pin: "1234"
+                    }
+                  }
+                  helpers.runAction(action);
+                ]]]
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+
+          - type: 'custom:button-card'
+            icon: mdi:console
+            name: var helpers.runAction
+            variables:
+              my_action:
+                action: perform-action
+                perform_action: switch.toggle
+                target:
+                  entity_id: switch.skylight
+                protect:
+                  pin: '1234'
+            tap_action:
+              action: javascript
+              javascript: '[[[ helpers.runAction(variables.my_action); ]]]'
+            section_mode: true
+            grid_options:
+              rows: 2
+              columns: 4
+
       - type: grid
         cards:
           - type: 'custom:button-card'
