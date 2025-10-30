@@ -107,7 +107,9 @@ styles:
 
 This examples shows the effect of template nesting when included code may require the template **CODE** rather that the template **VALUE**. Here Browser Mod code uses a button-card. However it may also be applicable if the Browser Mod code used another card that also supported `[[[ ]]]` javascript templates.
 
-https://github.com/user-attachments/assets/b81f840b-9b35-4693-8e61-0864e3dcb232
+<video width="400" controls>
+  <source src="/button-card/images/browser-mod-nested-templates-example.mp4" type="video/mp4">
+</video>
 
 ```yaml
 type: custom:button-card
@@ -150,5 +152,4 @@ tap_action:
               [[[[
                 return `Light is ${states['light.bed_light'].state.toUpperCase()}`;
               ]]]]
-
 ```
