@@ -102,3 +102,53 @@ styles:
         return entity?.state === 'on' ? 'Light On' : 'Light Off';
       ]]]
     ```
+
+## Nested templates in Browser Mod
+
+This examples shows the effect of template nesting when included code may require the template **CODE** rather that the template **VALUE**. Here Browser Mod code uses a button-card. However it may also be applicable if the Browser Mod code used another card that also supported `[[[ ]]]` javascript templates.
+
+https://github.com/user-attachments/assets/b81f840b-9b35-4693-8e61-0864e3dcb232
+
+```yaml
+type: custom:button-card
+show_label: true
+label: Broswer Mod Nested Templates
+section_mode: true
+grid_options:
+  rows: 1
+  columns: 12
+tap_action:
+  action: fire-dom-event
+  browser_mod:
+    service: browser_mod.popup
+    data:
+      title: Nested Templates Example
+      content:
+        type: vertical-stack
+        cards:
+          - type: tile
+            entity: light.bed_light
+            vertical: false
+            features_position: inline
+            features:
+              - type: toggle
+          - type: markdown
+            content: Non-nested template
+            text_only: true
+          - type: custom:button-card
+            show_label: true
+            label: |
+              [[[
+                return `Light is ${states['light.bed_light'].state.toUpperCase()}`;
+              ]]]
+          - type: markdown
+            content: Nested template
+            text_only: true
+          - type: custom:button-card
+            show_label: true
+            label: |
+              [[[[
+                return `Light is ${states['light.bed_light'].state.toUpperCase()}`;
+              ]]]]
+
+```
