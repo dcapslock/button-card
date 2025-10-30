@@ -13,7 +13,7 @@ All the fields support [JS templates](../advanced/js-templates.md). You may also
 | `service` | [:white_check_mark:](../advanced/js-templates.md) | string | none | Any service | Service to call (e.g. `media_player.media_play_pause`) when `action` defined as `call-service` |
 | `perform_action` | [:white_check_mark:](../advanced/js-templates.md) | string | none | Any action | Action to call (e.g. `media_player.media_play_pause`) when `action` defined as `perform-action` |
 | `data` or `service_data` | [:white_check_mark:](../advanced/js-templates.md) | object | none | Any service data | Service data to include (e.g. `entity_id: media_player.bedroom`) when `action` defined as `call-service` or `perform-action`. If your `data` requires an `entity_id`, you can use the keyword `entity`, this will actually call the service on the entity defined in the main configuration of this card. Useful for [configuration templates](../advanced/config-templates.md) |
-| `haptic` | [:white_check_mark:](../advanced/js-templates.md) | string | none | `success`, `warning`, `failure`, `light`, `medium`, `heavy`, `selection` | Haptic feedback for the [Beta IOS App](http://home-assistant.io/ios/beta) |
+| `haptic` | [:white_check_mark:](../advanced/js-templates.md) | string | none | `success`, `warning`, `failure`, `light`, `medium`, `heavy`, `selection`, `none` | [Haptic feedback](https://companion.home-assistant.io/docs/integrations/haptics/) for Home Assistant Companion app on iOS and Android. This overrides any haptic feedback that Home Assistant may use for the action, except for `failure`. Use `none` to diable inbuilt Home Assistant haptics for an action. |
 | `repeat` | [:white_check_mark:](../advanced/js-templates.md) | number | none | eg: `500` | For a hold_action, you can optionally configure the action to repeat while the button is being held down (for example, to repeatedly increase the volume of a media player). Define the number of milliseconds between repeat actions here. Not available for `press` or `release` actions. |
 | `repeat_limit` | [:white_check_mark:](../advanced/js-templates.md) | number | none | eg: `5` | For Hold action and if `repeat` if defined, it will stop calling the action after the `repeat_limit` has been reached. Not available for `press` or `release` actions. |
 | `confirmation` | [:white_check_mark:](../advanced/js-templates.md) | object | none | See [confirmation](#confirmation) | Display a confirmation popup, overrides the default `confirmation` object. |
@@ -402,7 +402,7 @@ If for any reason, you want to run an action directly from javascript, `helpers.
 
 Eg:
 
-* With the action defined directly in the template:
+- With the action defined directly in the template:
 
       ```yaml
       type: 'custom:button-card'
@@ -423,7 +423,7 @@ Eg:
           ]]]
       ```
 
-- With the action defined in a variable:
+* With the action defined in a variable:
 
       ```yaml
       type: 'custom:button-card'

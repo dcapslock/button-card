@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { HapticType } from '../forward-haptic';
 import { LovelaceCardConfig, LovelaceCard } from './lovelace';
 import { HassServiceTarget } from 'home-assistant-js-websocket';
 
@@ -292,7 +293,7 @@ export interface BaseActionConfig {
   repeat?: number;
   repeat_limit?: number;
   sound?: string;
-  haptic?: 'light' | 'medium' | 'heavy' | 'selection' | 'success' | 'warning' | 'error' | 'none';
+  haptic?: HapticType;
   protect?: ButtonCardProtect;
 }
 

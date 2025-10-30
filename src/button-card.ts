@@ -107,6 +107,7 @@ import {
   formatDateYear,
 } from './common/format_date';
 import { parseDuration } from './common/parse-duration';
+import { forwardHaptic, HapticType } from './forward-haptic';
 
 let helpers = (window as any).cardHelpers;
 const helperPromise = new Promise<void>(async (resolve) => {
@@ -205,6 +206,8 @@ class ButtonCard extends LitElement {
 
   private _protectedAction?: ActionEventData = undefined;
 
+  private _hapticCapture = false;
+
   private get _doIHaveEverything(): boolean {
     return !!this._hass && !!this._config && this.isConnected;
   }
@@ -282,6 +285,7 @@ class ButtonCard extends LitElement {
     super.disconnectedCallback();
     this._clearInterval();
     this._updateTimerCancel();
+    window.removeEventListener('haptic', this._hapticInterceptHandler.bind(this), { capture: true });
   }
 
   public connectedCallback(): void {
@@ -292,6 +296,7 @@ class ButtonCard extends LitElement {
       this._updateTimerStart();
       this._startTimerCountdown();
     }
+    window.addEventListener('haptic', this._hapticInterceptHandler.bind(this), { capture: true });
   }
 
   private _evaluateVariablesSkipError(stateObj?: HassEntity | undefined) {
@@ -1973,6 +1978,15 @@ class ButtonCard extends LitElement {
     });
   }
 
+  private _hapticInterceptHandler(ev: Event): void {
+    if (this._hapticCapture && ev.stopPropagation) {
+      const hapticType: HapticType | undefined = (ev as CustomEvent).detail;
+      if (hapticType !== 'failure') {
+        ev.stopPropagation();
+      }
+    }
+  }
+
   private _handleAction(ev: CustomEvent, options: { isIcon: boolean }): void {
     if (options.isIcon && this._hasIconActions && ev.stopPropagation) {
       // stop event bubbling to avoid triggering card action
@@ -2030,7 +2044,11 @@ class ButtonCard extends LitElement {
       }
     }
 
+    const haptic: HapticType | undefined = actionData[NORMALISED_ACTION]?.haptic;
+    this._hapticCapture = haptic !== undefined;
     handleAction(this, this._hass!, actionData, 'tap');
+    this._hapticCapture = false;
+    if (haptic && haptic != 'none') forwardHaptic(this, haptic);
   }
 
   private async _customActionsCallback(ev: ActionCustomEvent): Promise<void> {
