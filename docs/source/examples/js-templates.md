@@ -107,9 +107,7 @@ styles:
 
 This examples shows the effect of template nesting when included code may require the template **CODE** rather that the template **VALUE**. Here Browser Mod code uses a button-card. However it may also be applicable if the Browser Mod code used another card that also supported `[[[ ]]]` javascript templates.
 
-<video width="400" controls>
-  <source src="/button-card/images/browser-mod-nested-templates-example.mp4" type="video/mp4">
-</video>
+![browser_mod example](../images/browser-mod-nested-templates-example.gif)
 
 ```yaml
 type: custom:button-card
@@ -139,7 +137,7 @@ tap_action:
             text_only: true
           - type: custom:button-card
             show_label: true
-            label: |
+            label: | # (1)!
               [[[
                 return `Light is ${states['light.bed_light'].state.toUpperCase()}`;
               ]]]
@@ -148,8 +146,25 @@ tap_action:
             text_only: true
           - type: custom:button-card
             show_label: true
-            label: |
+            label: | # (2)!
               [[[[
                 return `Light is ${states['light.bed_light'].state.toUpperCase()}`;
               ]]]]
 ```
+
+1.  In this case, the card in the popup will get the following configuration which is the resulting string of the JS template evaluated by the main card (which is why the text doesn't update in the animation above):
+
+    ```yaml
+    label: Light is ON
+    # or
+    label: Light is OFF
+    ```
+
+2.  In this case, the card in the popup will get the configuration below (1 pair of `[]` removed) and it will then evaluate this JS template by itself:
+
+    ```yaml
+    label: |
+      [[[
+        return `Light is ${states['light.bed_light'].state.toUpperCase()}`;
+      ]]]
+    ```

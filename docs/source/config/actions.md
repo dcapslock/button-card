@@ -423,7 +423,7 @@ Eg:
           ]]]
       ```
 
-* With the action defined in a variable:
+- With the action defined in a variable:
 
       ```yaml
       type: 'custom:button-card'
